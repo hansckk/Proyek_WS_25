@@ -30,11 +30,15 @@ router.get("/get-pokemon", async (req, res) => {
       `https://pokeapi.co/api/v2/pokemon/${search}`
     );
 
-    console.log(getPokemon.data.types);
+    const pokemonTypes = getPokemon.data.types;
+
+    if (pokemonTypes.length == 2) {
+    }
 
     return res.status(200).json({
       pokemon_name: getPokemon.data.name,
       pokedex_entries: getPokemon.data.id,
+      pokemon_types: pokemonTypes,
     });
   } catch (error) {
     if (error.response && error.response.status === 404) {
