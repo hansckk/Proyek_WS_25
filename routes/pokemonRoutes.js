@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
-const {connectDatabase} = require("../config/database");
+const { connectDatabase } = require("../config/database");
 
 router.get("/get-pokemon", async (req, res) => {
   try {
@@ -30,14 +30,15 @@ router.get("/get-pokemon", async (req, res) => {
     );
 
     const pokemonTypes = getPokemon.data.types;
-
-    if (pokemonTypes.length == 2) {
+    var types = [];
+    for (let i = 0; i < pokemonTypes.length; i++) {
+      types.push(pokemonTypes[i].type.name);
     }
 
     return res.status(200).json({
       pokemon_name: getPokemon.data.name,
       pokedex_entries: getPokemon.data.id,
-      pokemon_types: pokemonTypes,
+      pokemon_types: types,
     });
   } catch (error) {
     if (error.response && error.response.status === 404) {
