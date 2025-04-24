@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const sequelize = require("../config/database");
-const { Op, DataTypes } = require("sequelize");
 const Joi = require("joi");
 const axios = require("axios");
+const {connectDatabase} = require("../config/database");
 
 router.get("/get-pokemon", async (req, res) => {
   try {

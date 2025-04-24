@@ -23,8 +23,8 @@
     "express": "^5.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.14.0",
-    "nodemon": "^3.1.9",
-    "sequelize": "^6.37.7"
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.13.2",
+    "nodemon": "^3.1.9"
   }
 }
