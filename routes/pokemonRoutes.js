@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
+const Role = require("../models/Role");
 const { connectDatabase } = require("../config/database");
 
 router.get("/get-pokemon", async (req, res) => {
