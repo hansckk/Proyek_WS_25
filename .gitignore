@@ -50,3 +50,6 @@ coverage/
 .env.production
 .env.backup
 .env.*.local
+
+# User credentials file
+users.txt

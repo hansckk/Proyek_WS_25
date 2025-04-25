@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
-const Role = require("../models/Role");
+const { authenticateToken } = require("../middleware/authenticate");
 
-router.get("/get-pokemon", async (req, res) => {
+router.get("/get-pokemon", authenticateToken, async (req, res) => {
   try {
     const getPokemonSchema = Joi.object({
       pokemon_name: Joi.string(),
