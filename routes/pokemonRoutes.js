@@ -3,7 +3,6 @@ const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
 const Role = require("../models/Role");
-const { connectDatabase } = require("../config/database");
 
 router.get("/get-pokemon", async (req, res) => {
   try {
@@ -40,6 +39,8 @@ router.get("/get-pokemon", async (req, res) => {
       pokemon_name: getPokemon.data.name,
       pokedex_entries: getPokemon.data.id,
       pokemon_types: types,
+      pokemon_height: `${getPokemon.data.height} meters`,
+      pokemon_weight: `${getPokemon.data.weight} kg`,
     });
   } catch (error) {
     if (error.response && error.response.status === 404) {
