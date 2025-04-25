@@ -1,0 +1,24 @@
+[{
+  "_id": {
+    "$oid": "6809a6151bbb076bfbdaf0e7"
+  },
+  "role_name": "Admin"
+},
+{
+  "_id": {
+    "$oid": "6809a6151bbb076bfbdaf0e8"
+  },
+  "role_name": "Free"
+},
+{
+  "_id": {
+    "$oid": "6809a6151bbb076bfbdaf0e9"
+  },
+  "role_name": "Trainer"
+},
+{
+  "_id": {
+    "$oid": "6809a6151bbb076bfbdaf0ea"
+  },
+  "role_name": "Gym Leader"
+}]
