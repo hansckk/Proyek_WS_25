@@ -10,6 +10,6 @@ const userRoutes = require("./routes/userRoutes");
 
 connectDatabase();
 app.use("/api/v1/pokemon", pokemonRoutes);
-app.use("api/v1/user", userRoutes);
+app.use("/api/v1/user", userRoutes);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
