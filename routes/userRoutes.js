@@ -5,6 +5,7 @@ const User = require("../models/User");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const { authenticateToken } = require("../middleware/authenticate");
 dotenv.config();
 
 router.post("/register", async (req, res) => {
@@ -41,7 +42,7 @@ router.post("/register", async (req, res) => {
     newUser.deletedAt = null;
     newUser.role.role_name = "Free";
     newUser.role.pokemon_storage = 10;
-    newUser.api_key = jwt.sign(
+    newUser.api_key.api_name = jwt.sign(
       {
         id: newUser._id,
         username: newUser.username,
@@ -50,6 +51,7 @@ router.post("/register", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.API_EXPIRATION_TIME }
     );
+    newUser.api_key.api_hit = 30;
 
     const createUser = await User.create(newUser);
 
@@ -108,7 +110,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.put("/refresh", async (req, res) => {
+router.post("/refresh", async (req, res) => {
   const authHeader = req.header("Authorization");
   if (!authHeader) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -131,6 +133,13 @@ router.put("/refresh", async (req, res) => {
       role: findUser.role.role_name,
     });
     return res.status(200).json({ token: newToken });
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
+
+router.post("/forget-password", authenticateToken, async (req, res) => {
+  try {
   } catch (error) {
     return res.status(500).json(error.message);
   }

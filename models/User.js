@@ -10,10 +10,8 @@ const userSchema = new mongoose.Schema({
     role_name: { type: String, default: "Free" },
     pokemon_storage: { type: Number, default: 10 },
   },
-  api_key: {
-    api_name: { type: String, required: true },
-    api_hit: { type: Number, required: true },
-  },
+  api_key: { type: String, required: true },
+  api_hit: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null },
