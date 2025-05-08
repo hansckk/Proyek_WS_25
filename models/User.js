@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -10,8 +11,8 @@ const userSchema = new mongoose.Schema({
     role_name: { type: String, default: "Free" },
     pokemon_storage: { type: Number, default: 10 },
   },
-  api_key: { type: String, required: true },
-  api_hit: { type: Number, required: true },
+  pokeDollar: { type: Number, required: true },
+  refresh_token: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null },

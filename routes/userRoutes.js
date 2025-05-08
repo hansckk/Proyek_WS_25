@@ -8,6 +8,29 @@ const dotenv = require("dotenv");
 const { authenticateToken } = require("../middleware/authenticate");
 dotenv.config();
 
+function generateTokens(user) {
+  const accessToken = jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+      role: user.role.role_name,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRATION }
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+    },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRATION }
+  );
+
+  return { accessToken, refreshToken };
+}
+
 router.post("/register", async (req, res) => {
   try {
     const schema = Joi.object({
@@ -42,23 +65,15 @@ router.post("/register", async (req, res) => {
     newUser.deletedAt = null;
     newUser.role.role_name = "Free";
     newUser.role.pokemon_storage = 10;
-    newUser.api_key.api_name = jwt.sign(
-      {
-        id: newUser._id,
-        username: newUser.username,
-        role: getRole.role_name,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.API_EXPIRATION_TIME }
-    );
-    newUser.api_key.api_hit = 30;
+    newUser.pokeDollar = 5000;
+    const { refreshToken, accessToken } = generateTokens(newUser);
+    newUser.refresh_token = refreshToken;
 
     const createUser = await User.create(newUser);
 
     return res.status(201).json({
       message: "Berhasil daftar!",
       username: createUser.username,
-      api_key: createUser.api_key,
     });
   } catch (error) {
     return res.status(500).json(error.message);
@@ -91,48 +106,15 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Password salah!" });
     }
 
-    const loginToken = jwt.sign(
-      {
-        id: findUser._id,
-        username: findUser.username,
-        role: findUser.role.role_name,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRATION }
-    );
+    const { accessToken, refreshToken } = generateTokens(findUser);
+    findUser.refresh_token = refreshToken;
+    await findUser.save();
 
     return res.status(200).json({
       message: "Berhasil login!",
-      token: loginToken,
+      access_token: accessToken,
+      refresh_token: refreshToken,
     });
-  } catch (error) {
-    return res.status(500).json(error.message);
-  }
-});
-
-router.post("/refresh", async (req, res) => {
-  const authHeader = req.header("Authorization");
-  if (!authHeader) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  const refreshToken = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : authHeader;
-
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    const findUser = await User.findById(decoded.id);
-    if (!findUser) {
-      return res.status(404).json({ error: "User not found!" });
-    }
-
-    const newToken = jwt.sign({
-      id: findUser._id,
-      username: findUser.username,
-      role: findUser.role.role_name,
-    });
-    return res.status(200).json({ token: newToken });
   } catch (error) {
     return res.status(500).json(error.message);
   }
