@@ -1,0 +1,120 @@
+[{
+  "_id": {
+    "$oid": "681ee40bfb169b392e41b6a9"
+  },
+  "itemId": "potion001",
+  "name": "Potion",
+  "type": "healing",
+  "effect": "Restores 20 HP",
+  "price": 300,
+  "stock": 50,
+  "rarity": "common"
+},
+{
+  "_id": {
+    "$oid": "681ee40bfb169b392e41b6aa"
+  },
+  "itemId": "pokeball001",
+  "name": "Poké Ball",
+  "type": "capture",
+  "effect": "Standard capture tool for wild Pokémon",
+  "price": 200,
+  "stock": 100,
+  "rarity": "common"
+},
+{
+  "_id": {
+    "$oid": "681ee40bfb169b392e41b6ab"
+  },
+  "itemId": "tm24",
+  "name": "TM24 - Thunderbolt",
+  "type": "TM",
+  "effect": "Teaches Thunderbolt (90 Power, Electric)",
+  "price": 3000,
+  "stock": 10,
+  "rarity": "rare"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6ad"
+  },
+  "itemId": "superpotion001",
+  "name": "Super Potion",
+  "type": "healing",
+  "effect": "Restores 50 HP",
+  "price": 700,
+  "stock": 40,
+  "rarity": "common"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6ae"
+  },
+  "itemId": "revive001",
+  "name": "Revive",
+  "type": "revival",
+  "effect": "Revives a fainted Pokémon with half HP",
+  "price": 1500,
+  "stock": 20,
+  "rarity": "uncommon"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6af"
+  },
+  "itemId": "ultraball001",
+  "name": "Ultra Ball",
+  "type": "capture",
+  "effect": "Higher catch rate than Great Ball",
+  "price": 1200,
+  "stock": 60,
+  "rarity": "uncommon"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6b0"
+  },
+  "itemId": "escape_rope001",
+  "name": "Escape Rope",
+  "type": "utility",
+  "effect": "Escape from caves or dungeons instantly",
+  "price": 550,
+  "stock": 25,
+  "rarity": "common"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6b1"
+  },
+  "itemId": "tm35",
+  "name": "TM35 - Flamethrower",
+  "type": "TM",
+  "effect": "Teaches Flamethrower (90 Power, Fire)",
+  "price": 3000,
+  "stock": 8,
+  "rarity": "rare"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6b2"
+  },
+  "itemId": "antidote001",
+  "name": "Antidote",
+  "type": "status",
+  "effect": "Cures poison",
+  "price": 100,
+  "stock": 100,
+  "rarity": "common"
+},
+{
+  "_id": {
+    "$oid": "681ee838fb169b392e41b6b3"
+  },
+  "itemId": "maxrevive001",
+  "name": "Max Revive",
+  "type": "revival",
+  "effect": "Fully revives a fainted Pokémon",
+  "price": 4000,
+  "stock": 5,
+  "rarity": "rare"
+}]
