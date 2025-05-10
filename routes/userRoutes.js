@@ -122,8 +122,49 @@ router.post("/login", async (req, res) => {
 
 router.post("/forget-password", authenticateToken, async (req, res) => {
   try {
+    const passwordSchema = Joi.object({
+      currentPassword: Joi.string().required(),
+      newPassword: Joi.string().min(10).required(),
+      confirmNewPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+        .messages({ 'any.only': 'Konfirmasi password harus sama dengan password baru' }),
+    });
+
+    const { error } = passwordSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: "User tidak ditemukan!" });
+    }
+
+    const isPasswordValid = await argon2.verify(
+      user.password,
+      req.body.currentPassword
+    );
+    
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Password saat ini salah!" });
+    }
+
+    user.password = await argon2.hash(req.body.newPassword);
+    user.updatedAt = new Date();
+    
+    const { accessToken, refreshToken } = generateTokens(user);
+    user.refresh_token = refreshToken;
+    
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password berhasil diubah!",
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
   } catch (error) {
-    return res.status(500).json(error.message);
+    return res.status(500).json({ error: error.message });
   }
 });
 
