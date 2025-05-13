@@ -24,8 +24,8 @@ function generateTokens(user) {
       id: user._id,
       username: user.username,
     },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRATION }
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRATION }
   );
 
   return { accessToken, refreshToken };
@@ -66,8 +66,6 @@ router.post("/register", async (req, res) => {
     newUser.role.role_name = "Free";
     newUser.role.pokemon_storage = 10;
     newUser.pokeDollar = 5000;
-    const { refreshToken, accessToken } = generateTokens(newUser);
-    newUser.refresh_token = refreshToken;
 
     const createUser = await User.create(newUser);
 
@@ -120,13 +118,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/forget-password", authenticateToken, async (req, res) => {
+router.put("/forget-password", authenticateToken, async (req, res) => {
   try {
     const passwordSchema = Joi.object({
-      currentPassword: Joi.string().required(),
-      newPassword: Joi.string().min(10).required(),
-      confirmNewPassword: Joi.string().valid(Joi.ref('newPassword')).required()
-        .messages({ 'any.only': 'Konfirmasi password harus sama dengan password baru' }),
+      new_password: Joi.string().min(10).required(),
+      confirm_new_password: Joi.string()
+        .valid(Joi.ref("new_password"))
+        .required()
+        .messages({
+          "any.only": "Konfirmasi password harus sama dengan password baru",
+        }),
     });
 
     const { error } = passwordSchema.validate(req.body);
@@ -136,32 +137,18 @@ router.post("/forget-password", authenticateToken, async (req, res) => {
 
     const userId = req.user.id;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ error: "User tidak ditemukan!" });
     }
 
-    const isPasswordValid = await argon2.verify(
-      user.password,
-      req.body.currentPassword
-    );
-    
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: "Password saat ini salah!" });
-    }
-
-    user.password = await argon2.hash(req.body.newPassword);
+    user.password = await argon2.hash(req.body.new_password);
     user.updatedAt = new Date();
-    
-    const { accessToken, refreshToken } = generateTokens(user);
-    user.refresh_token = refreshToken;
-    
+
     await user.save();
 
     return res.status(200).json({
       message: "Password berhasil diubah!",
-      access_token: accessToken,
-      refresh_token: refreshToken,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });

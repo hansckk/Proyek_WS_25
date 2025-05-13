@@ -7,7 +7,7 @@ const authenticateToken = async (req, res, next) => {
   if (!authHeader) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const token = authHeader.startsWith("Bearer")
+  const token = authHeader.startsWith("Bearer ")
     ? authHeader.slice(7)
     : authHeader;
 
