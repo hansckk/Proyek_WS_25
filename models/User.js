@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema({
     role_name: { type: String, default: "Free" },
     pokemon_storage: { type: Number, default: 10 },
   },
+  pokemon: [
+    {
+      pokemon_name: { type: String },
+      pokedex_entries: { type: Number },
+      pokemon_level: { type: Number },
+    },
+  ],
   pokeDollar: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

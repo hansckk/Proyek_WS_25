@@ -7,11 +7,15 @@ app.use(express.urlencoded({ extended: true }));
 
 const pokemonRoutes = require("./routes/pokemonRoutes");
 const userRoutes = require("./routes/userRoutes");
-const itemshopRoutes = require('./routes/itemshopRoutes');
+const itemshopRoutes = require("./routes/itemshopRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 connectDatabase();
 app.use("/api/v1/pokemon", pokemonRoutes);
 app.use("/api/v1/user", userRoutes);
-app.use('/api/v1/items', itemshopRoutes);
+app.use("/api/v1/items", itemshopRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
-app.listen(port, () => console.log(`Server running at http://localhost:${port}!`));
+app.listen(port, () =>
+  console.log(`Server running at http://localhost:${port}!`)
+);

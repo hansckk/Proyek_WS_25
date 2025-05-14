@@ -15,8 +15,8 @@ function generateTokens(user) {
       username: user.username,
       role: user.role.role_name,
     },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRATION }
+    process.env.JWT_ACCESS_SECRET,
+    { expiresIn: process.env.JWT_ACCESS_EXPIRATION }
   );
 
   const refreshToken = jwt.sign(
@@ -24,8 +24,8 @@ function generateTokens(user) {
       id: user._id,
       username: user.username,
     },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRATION }
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRATION }
   );
 
   return { accessToken, refreshToken };
@@ -105,8 +105,6 @@ router.post("/login", async (req, res) => {
     }
 
     const { accessToken, refreshToken } = generateTokens(findUser);
-    findUser.refresh_token = refreshToken;
-    await findUser.save();
 
     return res.status(200).json({
       message: "Berhasil login!",
@@ -118,9 +116,45 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.put("/forget-password", authenticateToken, async (req, res) => {
+router.post("/refresh-token", async (req, res) => {
+  try {
+    const refreshTokenSchema = Joi.object({
+      refresh_token: Joi.string().required(),
+    });
+
+    const { error } = refreshTokenSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const refreshToken = req.body.refresh_token;
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const findUser = await User.findById(decoded.id);
+      if (!findUser) {
+        return res.status(404).json({ error: "User tidak ditemukan!" });
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } =
+        generateTokens(findUser);
+      return res.status(200).json({
+        message: "Token berhasil diperbarui!",
+        access_token: accessToken,
+        refresh_token: newRefreshToken,
+      });
+    } catch (error) {
+      return res.status(403).json({ error: "Refresh Token tidak valid!" });
+    }
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
+
+router.put("/forget-password", async (req, res) => {
   try {
     const passwordSchema = Joi.object({
+      username: Joi.string().required(),
+      email: Joi.string().email().required(),
       new_password: Joi.string().min(10).required(),
       confirm_new_password: Joi.string()
         .valid(Joi.ref("new_password"))
@@ -135,17 +169,22 @@ router.put("/forget-password", authenticateToken, async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+    const findUser = await User.findOne({
+      username: req.body.username,
+    });
 
-    if (!user) {
+    if (!findUser) {
       return res.status(404).json({ error: "User tidak ditemukan!" });
     }
 
-    user.password = await argon2.hash(req.body.new_password);
-    user.updatedAt = new Date();
+    if (findUser.email !== req.body.email) {
+      return res.status(400).json({ error: "Email tidak sesuai!" });
+    }
 
-    await user.save();
+    findUser.password = await argon2.hash(req.body.new_password);
+    findUser.updatedAt = new Date();
+
+    await findUser.save();
 
     return res.status(200).json({
       message: "Password berhasil diubah!",
@@ -154,5 +193,6 @@ router.put("/forget-password", authenticateToken, async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
 
 module.exports = router;
