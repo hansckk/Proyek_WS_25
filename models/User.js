@@ -17,6 +17,17 @@ const userSchema = new mongoose.Schema({
       pokemon_level: { type: Number },
     },
   ],
+  items: [
+    {
+      name:      { type: String },
+      type:      { type: String },
+      effect:    { type: String },
+      price:     { type: Number },
+      quantity:  { type: Number },
+      rarity:    { type: String },
+      label:     { type: String },
+    },
+  ],
   pokeDollar: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

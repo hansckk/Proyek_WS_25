@@ -8,6 +8,7 @@ const itemSchema = new mongoose.Schema({
   price: Number,
   stock: Number,
   rarity: String,
+  label: { type: String }
 });
 
 module.exports = mongoose.model('Item', itemSchema);
