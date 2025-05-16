@@ -1,21 +1,31 @@
 const express = require("express");
+const path = require('path');
 const { connectDatabase } = require("./config/database");
+const mediaRoutes = require('./routes/media');
 const app = express();
 const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const pokemonRoutes = require("./routes/pokemonRoutes");
 const userRoutes = require("./routes/userRoutes");
 const itemshopRoutes = require("./routes/itemshopRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
-connectDatabase();
-app.use("/api/v1/pokemon", pokemonRoutes);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/items", itemshopRoutes);
-app.use("/api/v1/admin", adminRoutes);
 
-app.listen(port, () =>
-  console.log(`Server running at http://localhost:${port}!`)
-);
+const startServer = async () => {
+  await connectDatabase();
+
+  app.use("/api/v1/pokemon", pokemonRoutes);
+  app.use("/api/v1/user", userRoutes);
+  app.use("/api/v1/items", itemshopRoutes);
+  app.use("/api/v1/admin", adminRoutes);
+  app.use('/api/media', mediaRoutes);
+
+  app.listen(port, () =>
+    console.log(`Server running at http://localhost:${port}!`)
+  );
+};
+
+startServer();
