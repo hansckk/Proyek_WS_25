@@ -4,42 +4,35 @@ const Joi = require("joi");
 const axios = require("axios");
 const { authenticateToken } = require("../middleware/authenticate");
 const User = require("../models/User");
+const Pokemon = require("../models/Pokemons");
 
-router.get("/get-pokemon", authenticateToken, async (req, res) => {
+router.get("/get-pokemon/:pokemon", authenticateToken, async (req, res) => {
   try {
     const getPokemonSchema = Joi.object({
-      pokemon_name: Joi.string(),
-      pokedex_entries: Joi.number().integer(),
-    }).or("pokemon_name", "pokedex_entries");
+      pokemon: Joi.alternatives().try(
+        Joi.string().regex(/^[a-zA-Z\-]+$/),
+        Joi.number().integer().min(1)
+      ),
+    });
 
-    const { error } = getPokemonSchema.validate(req.query);
+    const { error } = getPokemonSchema.validate(req.params);
     if (error) {
       return res
         .status(400)
         .json({ message: "Pokemon name atau Pokedex entries harus diisi!" });
     }
 
-    const { pokemon_name, pokedex_entries } = req.query;
-    var search;
-    if (pokemon_name) {
-      search = pokemon_name;
-    } else {
-      search = pokedex_entries;
-    }
+    const search = req.params.pokemon.toLowerCase();
     const getPokemon = await axios.get(
       `https://pokeapi.co/api/v2/pokemon/${search}`
     );
 
-    const pokemonTypes = getPokemon.data.types;
-    var types = [];
-    for (let i = 0; i < pokemonTypes.length; i++) {
-      types.push(pokemonTypes[i].type.name);
-    }
+    const pokemonTypes = getPokemon.data.types.map((t) => t.type.name);
 
     return res.status(200).json({
       pokemon_name: getPokemon.data.name,
       pokedex_entries: getPokemon.data.id,
-      pokemon_types: types,
+      pokemon_types: pokemonTypes,
       pokemon_height: `${getPokemon.data.height} meters`,
       pokemon_weight: `${getPokemon.data.weight} kg`,
     });
@@ -52,7 +45,7 @@ router.get("/get-pokemon", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/get-my-pokemon/", authenticateToken, async (req, res) => {
+router.get("/get-pokemon/", authenticateToken, async (req, res) => {
   try {
     const findUser = await User.findOne({ _id: req.user.id });
     if (!findUser) {
@@ -60,7 +53,7 @@ router.get("/get-my-pokemon/", authenticateToken, async (req, res) => {
     }
     if (!findUser.pokemon) {
       return res
-        .status(200)
+        .status(400)
         .json({ message: `${findUser.username} belum ada pokemon!` });
     }
     return res.status(200).json(findUser.pokemon);
@@ -69,10 +62,13 @@ router.get("/get-my-pokemon/", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/catch/:pokemon_name", authenticateToken, async (req, res) => {
+router.post("/catch/:pokemon", authenticateToken, async (req, res) => {
   try {
     const catchSchema = Joi.object({
-      pokemon_name: Joi.string().required(),
+      pokemon: Joi.alternatives().try(
+        Joi.string().regex(/^[a-zA-Z\-]+$/),
+        Joi.number().integer().min(1)
+      ),
     });
     const { error } = catchSchema.validate(req.params);
     if (error) {
@@ -80,7 +76,7 @@ router.post("/catch/:pokemon_name", authenticateToken, async (req, res) => {
     }
 
     const response = await axios.get(
-      `https://pokeapi.co/api/v2/pokemon-species/${req.params.pokemon_name}`
+      `https://pokeapi.co/api/v2/pokemon-species/${req.params.pokemon}`
     );
     const name = response.data.name;
     const pokemonName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -95,9 +91,27 @@ router.post("/catch/:pokemon_name", authenticateToken, async (req, res) => {
       cost = 1000;
     }
     const findUser = await User.findOne({ _id: req.user.id });
+
+    if (!findUser) {
+      return res.status(404).json({ message: "User tidak ditemukan!" });
+    }
+
     if (findUser.pokeDollar < cost) {
       return res.status(400).json({ message: "PokeDollars tidak cukup!" });
     }
+
+    const countPokemon = await Pokemon.countDocuments({
+      pokemon_owner: findUser._id,
+    });
+    console.log(countPokemon);
+    
+    
+    if (Number(countPokemon) + 1 > findUser.pokemon_storage) {
+      return res.status(400).json({
+        message: "Penyimpanan Pokemon anda sudah penuh!",
+      });
+    }
+
     findUser.pokeDollar = Number(findUser.pokeDollar) - Number(cost);
     const catchProbability = catchRate / 255;
     if (Math.random() > catchProbability) {
@@ -114,30 +128,24 @@ router.post("/catch/:pokemon_name", authenticateToken, async (req, res) => {
     } else if (cost === 2000) {
       pokemonLevel = Math.floor(Math.random() * (30 - 15 + 1)) + 15;
     } else {
-      pokemonLevel = Math.floor(Math.random() * 15);
+      pokemonLevel = Math.floor(Math.random() * 15) + 1;
     }
 
-    const newPokemon = {
+    var newPokemon = {
       pokemon_name: pokemonName,
       pokedex_entries: response.data.id,
       pokemon_level: pokemonLevel,
+      pokemon_exp: 1,
+      pokemon_owner: findUser._id,
+      caught_at: new Date(),
     };
 
-    if (!findUser.pokemon) {
-      findUser.pokemon = [];
-    }
-
-    findUser.pokemon.push(newPokemon);
-    if (findUser.pokemon.length > findUser.role.pokemon_storage) {
-      return res.status(400).json({
-        message: `Penyimpanan Pokemon anda sudah penuh!`,
-      });
-    }
-
+    await Pokemon.create(newPokemon);
     await findUser.save();
+
     return res.status(200).json({
-      harga: `${cost} PokeDollar`,
       message: `${pokemonName} berhasil ditangkap!`,
+      pokemon_level: pokemonLevel,
       pokeDollar: `PokeDollar anda sekarang: ${findUser.pokeDollar}`,
     });
   } catch (error) {

@@ -5,7 +5,10 @@ const User = require("../models/User");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { authenticateToken } = require("../middleware/authenticate");
+const {
+  authenticateToken,
+  authenticateRefreshToken,
+} = require("../middleware/authenticate");
 dotenv.config();
 
 function generateTokens(user) {
@@ -13,7 +16,7 @@ function generateTokens(user) {
     {
       id: user._id,
       username: user.username,
-      role: user.role.role_name,
+      role: user.role_name,
     },
     process.env.JWT_ACCESS_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRATION }
@@ -23,6 +26,7 @@ function generateTokens(user) {
     {
       id: user._id,
       username: user.username,
+      role: user.role_name,
     },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: process.env.JWT_REFRESH_EXPIRATION }
@@ -63,8 +67,7 @@ router.post("/register", async (req, res) => {
     newUser.createdAt = new Date();
     newUser.updatedAt = new Date();
     newUser.deletedAt = null;
-    newUser.role.role_name = "Free";
-    newUser.role.pokemon_storage = 10;
+    newUser.pokemon_storage = 10;
     newUser.pokeDollar = 5000;
 
     const createUser = await User.create(newUser);
@@ -116,35 +119,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/refresh-token", async (req, res) => {
+router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   try {
-    const refreshTokenSchema = Joi.object({
-      refresh_token: Joi.string().required(),
+    const { accessToken, refreshToken } = generateTokens(req.user);
+    return res.status(200).json({
+      message: "Berhasil mendapatkan token baru!",
+      access_token: accessToken,
+      refresh_token: refreshToken,
     });
-
-    const { error } = refreshTokenSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-
-    const refreshToken = req.body.refresh_token;
-    try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-      const findUser = await User.findById(decoded.id);
-      if (!findUser) {
-        return res.status(404).json({ error: "User tidak ditemukan!" });
-      }
-
-      const { accessToken, refreshToken: newRefreshToken } =
-        generateTokens(findUser);
-      return res.status(200).json({
-        message: "Token berhasil diperbarui!",
-        access_token: accessToken,
-        refresh_token: newRefreshToken,
-      });
-    } catch (error) {
-      return res.status(403).json({ error: "Refresh Token tidak valid!" });
-    }
   } catch (error) {
     return res.status(500).json(error.message);
   }
@@ -194,5 +176,22 @@ router.put("/forget-password", async (req, res) => {
   }
 });
 
+router.post("/trade", authenticateToken, async (req, res) => {
+  try {
+    const tradeSchema = Joi.object({
+      user_id: Joi.string().required(),
+      pokemon_id: Joi.string().required(),
+    });
+
+    const { error } = tradeSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/trade/accept", authenticateToken, async (req, res) => {});
 
 module.exports = router;

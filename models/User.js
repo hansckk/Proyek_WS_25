@@ -6,17 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   age: { type: Number, required: true },
-  role: {
-    role_name: { type: String, default: "Free" },
-    pokemon_storage: { type: Number, default: 10 },
-  },
-  pokemon: [
-    {
-      pokemon_name: { type: String },
-      pokedex_entries: { type: Number },
-      pokemon_level: { type: Number },
-    },
-  ],
+  pokemon_storage: { type: Number, default: 10 },
   items: [
     {
       name:      { type: String },
