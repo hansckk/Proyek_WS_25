@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const User = require("../models/User");
+const Trade = require("../models/Trades.js");
+const Pokemon = require("../models/Pokemons.js");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -187,6 +189,45 @@ router.post("/trade", authenticateToken, async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
+
+    const findFromTrainer = await User.findOne({ _id: req.user.id });
+    if (!findFromTrainer) {
+      return res.status(404).json({ error: "User tidak ditemukan!" });
+    }
+    const findToTrainer = await User.findOne({ _id: req.body.user_id });
+    if (!findToTrainer) {
+      return res.status(404).json({ error: "User tidak ditemukan!" });
+    }
+
+    if (findFromTrainer._id.toString() === findToTrainer._id.toString()) {
+      return res
+        .status(400)
+        .json({ error: "Tidak bisa trade ke diri sendiri!" });
+    }
+
+    const findTradedPokemon = await Pokemon.findOne({
+      pokemon_owner: findFromTrainer._id,
+      _id: req.body.pokemon_id,
+    });
+    if (!findTradedPokemon) {
+      return res
+        .status(404)
+        .json({ error: "Pokemon yang ingin ditrade tidak ditemukan!" });
+    }
+
+    var newTrade = new Trade();
+    newTrade.from_trainer = findFromTrainer._id;
+    newTrade.to_trainer = findToTrainer._id;
+    newTrade.status = "pending";
+    newTrade.createdAt = new Date();
+    newTrade.updatedAt = new Date();
+
+    const createTrade = await Trade.create(newTrade);
+
+    return res.status(201).json({
+      message: "Trade berhasil dibuat!",
+      trade_id: createTrade._id,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

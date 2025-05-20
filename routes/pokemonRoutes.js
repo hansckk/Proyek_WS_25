@@ -104,8 +104,7 @@ router.post("/catch/:pokemon", authenticateToken, async (req, res) => {
       pokemon_owner: findUser._id,
     });
     console.log(countPokemon);
-    
-    
+
     if (Number(countPokemon) + 1 > findUser.pokemon_storage) {
       return res.status(400).json({
         message: "Penyimpanan Pokemon anda sudah penuh!",
@@ -138,6 +137,7 @@ router.post("/catch/:pokemon", authenticateToken, async (req, res) => {
       pokemon_exp: 1,
       pokemon_owner: findUser._id,
       caught_at: new Date(),
+      trade_history: [],
     };
 
     await Pokemon.create(newPokemon);

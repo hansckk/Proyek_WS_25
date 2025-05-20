@@ -11,6 +11,12 @@ const pokemonSchema = new mongoose.Schema({
     required: true,
   },
   caught_at: { type: Date, default: Date.now },
+  trade_history: [
+    {
+      user_id: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+      traded_at: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 const Pokemon = mongoose.model("pokemons", pokemonSchema);
