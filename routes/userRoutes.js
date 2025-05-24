@@ -71,6 +71,7 @@ router.post("/register", async (req, res) => {
     newUser.deletedAt = null;
     newUser.pokemon_storage = 10;
     newUser.pokeDollar = 5000;
+    newUser.role = "user";
 
     const createUser = await User.create(newUser);
 
