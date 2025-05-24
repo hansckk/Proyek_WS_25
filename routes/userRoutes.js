@@ -179,13 +179,13 @@ router.put("/forget-password", async (req, res) => {
   }
 });
 
+const tradeSchema = Joi.object({
+  user_id: Joi.string().required(),
+  pokemon_id: Joi.string().required(),
+});
+
 router.post("/trade", authenticateToken, async (req, res) => {
   try {
-    const tradeSchema = Joi.object({
-      user_id: Joi.string().required(),
-      pokemon_id: Joi.string().required(),
-    });
-
     const { error } = tradeSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -234,6 +234,67 @@ router.post("/trade", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/trade/accept", authenticateToken, async (req, res) => {});
+router.put("/trade/:trade_id/:action", authenticateToken, async (req, res) => {
+  try {
+    const actionSchema = Joi.object({
+      trade_id: Joi.string().alphanum().length(24).required(),
+      action: Joi.string().valid("accept", "reject").required(),
+      offered_pokemon_id: Joi.string().alphanum().length(24).optional(),
+    });
+
+    const dataToValidate = { ...req.params, ...req, body };
+
+    const { error } = actionSchema.validate(dataToValidate);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    const findTrade = await Trade.findById(req.params.trade_id);
+    if (!findTrade) {
+      return res.status(404).json({ error: "Trade tidak ditemukan!" });
+    }
+
+    if (findTrade.to_trainer.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "Anda tidak berhak mengakses trade ini!" });
+    }
+
+    if (findTrade.status !== "pending") {
+      return res.status(400).json({ error: "Trade sudah tidak valid!" });
+    }
+
+    if (req.params.action === "accept") {
+      findTrade.status = "accepted";
+      const findOfferedPokemon = await Pokemon.findOne({
+        _id: req.body.offered_pokemon_id,
+        pokemon_owner: from_trainer_id,
+      });
+
+      if (!findOfferedPokemon) {
+        return res
+          .status(404)
+          .json({ error: "Pokemon tidak ditemukan atau bukan milik anda!" });
+      }
+      findOfferedPokemon.pokemon_owner = to_trainer_id;
+      findOfferedPokemon.trade_history.push({
+        trade_id: findTrade._id,
+        from_user: findTrade.from_trainer,
+        traded_at: new Date(),
+      });
+      await findOfferedPokemon.save();
+    } else {
+      findTrade.status = "rejected";
+    }
+
+    findTrade.updatedAt = new Date();
+    await findTrade.save();
+
+    return res
+      .status(200)
+      .json({ message: `Trade berhasil di-${req.params.action}` });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;

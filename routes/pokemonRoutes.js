@@ -97,7 +97,11 @@ router.post("/catch/:pokemon", authenticateToken, async (req, res) => {
     }
 
     if (findUser.pokeDollar < cost) {
-      return res.status(400).json({ message: "PokeDollars tidak cukup!" });
+      return res
+        .status(400)
+        .json({
+          message: `PokeDollars tidak cukup!, pokedollars anda: ${findUser.pokeDollar}`,
+        });
     }
 
     const countPokemon = await Pokemon.countDocuments({

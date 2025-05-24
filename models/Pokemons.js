@@ -13,7 +13,8 @@ const pokemonSchema = new mongoose.Schema({
   caught_at: { type: Date, default: Date.now },
   trade_history: [
     {
-      user_id: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+      trade_id: { type: mongoose.Schema.Types.ObjectId, ref: "trades" },
+      from_user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
       traded_at: { type: Date, default: Date.now },
     },
   ],
