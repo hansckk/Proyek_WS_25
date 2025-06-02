@@ -15,9 +15,12 @@ const pokemonSchema = new mongoose.Schema({
     {
       trade_id: { type: mongoose.Schema.Types.ObjectId, ref: "trades" },
       from_user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+      to_user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
       traded_at: { type: Date, default: Date.now },
     },
   ],
+  pokemon_types: [{ type: String }],
+  sprite_url: { type: String },
 });
 
 const Pokemon = mongoose.model("pokemons", pokemonSchema);

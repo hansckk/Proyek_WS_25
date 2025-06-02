@@ -18,7 +18,7 @@ function generateTokens(user) {
     {
       id: user._id,
       username: user.username,
-      role: user.role_name,
+      role: user.role,
     },
     process.env.JWT_ACCESS_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRATION }
@@ -28,7 +28,7 @@ function generateTokens(user) {
     {
       id: user._id,
       username: user.username,
-      role: user.role_name,
+      role: user.role,
     },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: process.env.JWT_REFRESH_EXPIRATION }
@@ -97,9 +97,12 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const findUser = await User.findOne({ username: req.body.username });
+    const findUser = await User.findOne({
+      username: req.body.username,
+      deletedAt: null,
+    });
     if (!findUser) {
-      return res.status(400).json({ error: "Username tidak ditemukan!" });
+      return res.status(400).json({ error: "Username atau password salah!" });
     }
 
     const isPasswordValid = await argon2.verify(
@@ -124,7 +127,15 @@ router.post("/login", async (req, res) => {
 
 router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   try {
-    const { accessToken, refreshToken } = generateTokens(req.user);
+    const activeUser = await User.findOne({
+      _id: req.user.id,
+      deletedAt: null,
+    });
+    if (!activeUser) {
+      return res.status(401).json({ error: "User tidak aktif!" });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(activeUser);
     return res.status(200).json({
       message: "Berhasil mendapatkan token baru!",
       access_token: accessToken,
@@ -140,7 +151,7 @@ router.put("/forget-password", async (req, res) => {
     const passwordSchema = Joi.object({
       username: Joi.string().required(),
       email: Joi.string().email().required(),
-      new_password: Joi.string().min(10).required(),
+      new_password: Joi.string().min(6).required(),
       confirm_new_password: Joi.string()
         .valid(Joi.ref("new_password"))
         .required()
@@ -156,6 +167,7 @@ router.put("/forget-password", async (req, res) => {
 
     const findUser = await User.findOne({
       username: req.body.username,
+      deletedAt: null,
     });
 
     if (!findUser) {
@@ -191,11 +203,17 @@ router.post("/trade", authenticateToken, async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const findFromTrainer = await User.findOne({ _id: req.user.id });
+    const findFromTrainer = await User.findOne({
+      _id: req.user.id,
+      deletedAt: null,
+    });
     if (!findFromTrainer) {
       return res.status(404).json({ error: "User tidak ditemukan!" });
     }
-    const findToTrainer = await User.findOne({ _id: req.body.user_id });
+    const findToTrainer = await User.findOne({
+      _id: req.body.user_id,
+      deletedAt: null,
+    });
     if (!findToTrainer) {
       return res.status(404).json({ error: "User tidak ditemukan!" });
     }
@@ -239,15 +257,19 @@ router.put("/trade/:trade_id/:action", authenticateToken, async (req, res) => {
     const actionSchema = Joi.object({
       trade_id: Joi.string().alphanum().length(24).required(),
       action: Joi.string().valid("accept", "reject").required(),
-      offered_pokemon_id: Joi.string().alphanum().length(24).optional(),
+      receiver_offered_pokemon_id: Joi.string()
+        .alphanum()
+        .length(24)
+        .allow("", null),
     });
 
-    const dataToValidate = { ...req.params, ...req, body };
+    const dataToValidate = { ...req.params, ...req.body };
 
     const { error } = actionSchema.validate(dataToValidate);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
+
     const findTrade = await Trade.findById(req.params.trade_id);
     if (!findTrade) {
       return res.status(404).json({ error: "Trade tidak ditemukan!" });
@@ -264,24 +286,74 @@ router.put("/trade/:trade_id/:action", authenticateToken, async (req, res) => {
     }
 
     if (req.params.action === "accept") {
-      findTrade.status = "accepted";
-      const findOfferedPokemon = await Pokemon.findOne({
-        _id: req.body.offered_pokemon_id,
-        pokemon_owner: from_trainer_id,
-      });
+      const initiatorPokemon = await Pokemon.findOne(findTrade.from_pokemon_id);
 
-      if (!findOfferedPokemon) {
-        return res
-          .status(404)
-          .json({ error: "Pokemon tidak ditemukan atau bukan milik anda!" });
+      if (!initiatorPokemon) {
+        return res.status(404).json({ error: "Pokemon tidak ditemukan!" });
       }
-      findOfferedPokemon.pokemon_owner = to_trainer_id;
-      findOfferedPokemon.trade_history.push({
-        trade_id: findTrade._id,
-        from_user: findTrade.from_trainer,
-        traded_at: new Date(),
-      });
-      await findOfferedPokemon.save();
+
+      if (
+        initiatorPokemon.pokemon_owner.toString() !==
+        findTrade.from_trainer.toString()
+      ) {
+        return res.status(400).json({
+          error:
+            "Kepemilikan Pokémon pengirim telah berubah, trade tidak valid.",
+        });
+      }
+
+      if (req.body.receiver_offered_pokemon_id) {
+        const receiverPokemon = await Pokemon.findOne({
+          _id: req.body.receiver_offered_pokemon_id,
+          pokemon_owner: req.user.id,
+        });
+
+        if (!receiverPokemon) {
+          return res.status(404).json({
+            error:
+              "Pokémon yang Anda tawarkan tidak ditemukan atau bukan milik Anda!",
+          });
+        }
+
+        if (
+          initiatorPokemon._id.toString() === receiverPokemon._id.toString()
+        ) {
+          return res.status(400).json({
+            error: "Tidak bisa menukar Pokémon dengan dirinya sendiri.",
+          });
+        }
+
+        initiatorPokemon.pokemon_owner = findTrade.to_trainer;
+        receiverPokemon.pokemon_owner = findTrade.from_trainer;
+
+        initiatorPokemon.trade_history.push({
+          trade_id: findTrade._id,
+          from_user: findTrade.from_trainer,
+          to_user: findTrade.to_trainer,
+          traded_at: new Date(),
+        });
+        receiverPokemon.trade_history.push({
+          trade_id: findTrade._id,
+          from_user: findTrade.to_trainer,
+          to_user: findTrade.from_trainer,
+          traded_at: new Date(),
+        });
+
+        await initiatorPokemon.save();
+        await receiverPokemon.save();
+      } else {
+        initiatorPokemon.pokemon_owner = findTrade.to_trainer;
+
+        initiatorPokemon.trade_history.push({
+          trade_id: findTrade._id,
+          from_user: findTrade.from_trainer,
+          to_user: findTrade.to_trainer,
+          traded_at: new Date(),
+        });
+        await initiatorPokemon.save();
+
+        findTrade.status = "accepted";
+      }
     } else {
       findTrade.status = "rejected";
     }
