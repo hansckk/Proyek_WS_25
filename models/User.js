@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
     ref: 'pokemons', 
     default: null, 
   },
+   profileImage: { // This will store the ObjectId of the Media document
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Media', // Reference to your Media model
+    default: null
+  }
+  
 });
 
 const User = mongoose.model("users", userSchema);
