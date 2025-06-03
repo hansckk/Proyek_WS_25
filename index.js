@@ -23,7 +23,7 @@ const startServer = async () => {
   app.use("/api/v1/items", itemshopRoutes);
   app.use("/api/v1/admin", adminRoutes);
   app.use('/api/media', mediaRoutes);
-  app.use('/api', buddyRoutes);
+  app.use('/api/v1/buddy', buddyRoutes);
 
   app.listen(port, () =>
     console.log(`Server running at http://localhost:${port}!`)

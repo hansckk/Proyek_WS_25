@@ -10,6 +10,11 @@ const pokemonSchema = new mongoose.Schema({
     ref: "users",
     required: true,
   },
+  assigned_buddy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+    default: null
+  },
   caught_at: { type: Date, default: Date.now },
   trade_history: [
     {
@@ -21,7 +26,8 @@ const pokemonSchema = new mongoose.Schema({
   ],
   pokemon_types: [{ type: String }],
   sprite_url: { type: String },
-});
+},{ collection: 'pokemon' });
 
-const Pokemon = mongoose.model("pokemons", pokemonSchema);
+const Pokemon = mongoose.model("pokemon", pokemonSchema);
+
 module.exports = Pokemon;

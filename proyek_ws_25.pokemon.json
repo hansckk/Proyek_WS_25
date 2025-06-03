@@ -1,0 +1,156 @@
+[{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c301"
+  },
+  "pokemon_name": "Pikachu",
+  "pokedex_entries": 25,
+  "pokemon_level": 15,
+  "pokemon_exp": 1500,
+  "pokemon_owner": {
+    "$oid": "683f0527eb38853974a67ccf"
+  },
+  "caught_at": {
+    "$date": "2024-01-10T10:00:00.000Z"
+  },
+  "pokemon_types": [
+    "Electric"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+  "__v": 1,
+  "assigned_buddy": {
+    "$oid": "683f0527eb38853974a67ccf"
+  },
+  "trade_history": []
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c302"
+  },
+  "pokemon_name": "Charmander",
+  "pokedex_entries": 4,
+  "pokemon_level": 12,
+  "pokemon_exp": 1000,
+  "pokemon_owner": {
+    "$oid": "683f0527eb38853974a67ccf"
+  },
+  "caught_at": {
+    "$date": "2024-02-15T14:30:00.000Z"
+  },
+  "pokemon_types": [
+    "Fire"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c303"
+  },
+  "pokemon_name": "Squirtle",
+  "pokedex_entries": 7,
+  "pokemon_level": 10,
+  "pokemon_exp": 800,
+  "pokemon_owner": {
+    "$oid": "665d5e2d5c31f4e1a0b2c3d4"
+  },
+  "caught_at": {
+    "$date": "2024-03-01T08:00:00.000Z"
+  },
+  "pokemon_types": [
+    "Water"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c304"
+  },
+  "pokemon_name": "Bulbasaur",
+  "pokedex_entries": 1,
+  "pokemon_level": 18,
+  "pokemon_exp": 2000,
+  "pokemon_owner": {
+    "$oid": "665d5e2d5c31f4e1a0b2c3d5"
+  },
+  "caught_at": {
+    "$date": "2024-04-20T17:00:00.000Z"
+  },
+  "trade_history": [
+    {
+      "trade_id": {
+        "$oid": "665d5e2d5c31f4e1a0b2c3d6"
+      },
+      "from_user": {
+        "$oid": "665d5e2d5c31f4e1a0b2c3d4"
+      },
+      "to_user": {
+        "$oid": "665d5e2d5c31f4e1a0b2c3d5"
+      },
+      "traded_at": {
+        "$date": "2024-04-19T16:00:00.000Z"
+      }
+    }
+  ],
+  "pokemon_types": [
+    "Grass",
+    "Poison"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c305"
+  },
+  "pokemon_name": "Jigglypuff",
+  "pokedex_entries": 39,
+  "pokemon_level": 5,
+  "pokemon_exp": 300,
+  "pokemon_owner": {
+    "$oid": "665d5e2d5c31f4e1a0b2c3d4"
+  },
+  "caught_at": {
+    "$date": "2024-05-01T11:00:00.000Z"
+  },
+  "pokemon_types": [
+    "Normal",
+    "Fairy"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png"
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c306"
+  },
+  "pokemon_name": "Meowth",
+  "pokedex_entries": 52,
+  "pokemon_level": 9,
+  "pokemon_exp": 700,
+  "pokemon_owner": {
+    "$oid": "665d5e2d5c31f4e1a0b2c3d5"
+  },
+  "caught_at": {
+    "$date": "2024-05-10T09:00:00.000Z"
+  },
+  "pokemon_types": [
+    "Normal"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/52.png"
+},
+{
+  "_id": {
+    "$oid": "665d5e2d5c31f4e1a0b2c307"
+  },
+  "pokemon_name": "Snorlax",
+  "pokedex_entries": 143,
+  "pokemon_level": 20,
+  "pokemon_exp": 3000,
+  "pokemon_owner": {
+    "$oid": "665d5e2d5c31f4e1a0b2c3d4"
+  },
+  "caught_at": {
+    "$date": "2024-05-25T18:00:00.000Z"
+  },
+  "pokemon_types": [
+    "Normal"
+  ],
+  "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png"
+}]
