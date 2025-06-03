@@ -12,6 +12,17 @@ const userSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null },
   role: { type: String, default: "user" },
+  items: [
+    {
+      name:      { type: String },
+      type:      { type: String },
+      effect:    { type: String },
+      price:     { type: Number },
+      quantity:  { type: Number },
+      rarity:    { type: String },
+      label:     { type: String },
+    },
+  ],
   buddy_pokemon: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'pokemons', 

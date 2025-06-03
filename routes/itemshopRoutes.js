@@ -80,7 +80,7 @@ router.post('/shop/buy', authenticateToken, async (req, res) => {
 
     
 
-    const existingItem = i.items.find(i => i.item_name === item.name);
+    const existingItem = user.items.find(i => i.item_name === item.name);
 
     if (existingItem) {
       existingItem.quantity += quantity;
