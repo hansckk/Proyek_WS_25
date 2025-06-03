@@ -1,12 +1,14 @@
-const mongoose = require("mongoose");
+// models/Media.js
+const mongoose = require('mongoose');
 
 const mediaSchema = new mongoose.Schema({
-  filename: String,
-  path: String,
-  mimetype: String,
-  size: Number,
-  uploadedAt: { type: Date, default: Date.now },
+  filename: { type: String, required: true },
+  path: { type: String, required: true },
+  mimetype: { type: String, required: true },
+  size: { type: Number, required: true },
+  // Add this line:
+  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false }, // Can be made required if every media must have an uploader
+  uploadedAt: { type: Date, default: Date.now }
 });
 
-const Media = mongoose.model("media", mediaSchema);
-module.exports = Media;
+module.exports = mongoose.model('Media', mediaSchema);
