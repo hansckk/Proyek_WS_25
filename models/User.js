@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null },
   role: { type: String, default: "user" },
+  buddy_pokemon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'pokemons', 
+    default: null, 
+  },
 });
 
 const User = mongoose.model("users", userSchema);

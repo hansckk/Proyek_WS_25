@@ -27,6 +27,30 @@ router.get('/shop', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/shop/:itemName', authenticateToken, async (req, res) => {
+    const rawItemName = req.params.itemName;
+    let searchName = rawItemName.toLowerCase();
+    searchName = searchName.replace(/é/g, 'e'); 
+    searchName = searchName.replace(/e/g, '(e|é)'); 
+
+    try {
+        const foundItem = await Item.findOne({
+            name: { $regex: searchName, $options: 'i' } 
+        });
+
+        if (!foundItem) {
+            return res.status(404).json({ message: `No item found matching "${rawItemName}".` });
+        }
+        res.status(200).json({
+            message: `Result for "${rawItemName}":`,
+            item: foundItem,
+        });
+    } catch (error) {
+        console.error(`Error fetching item by name "${rawItemName}":`, error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 router.post('/shop/buy', authenticateToken, async (req, res) => {
   const userId = req.user.id || req.user._id;
@@ -56,7 +80,7 @@ router.post('/shop/buy', authenticateToken, async (req, res) => {
 
     
 
-    const existingItem = user.items.find(i => i.item_name === item.name);
+    const existingItem = i.items.find(i => i.item_name === item.name);
 
     if (existingItem) {
       existingItem.quantity += quantity;

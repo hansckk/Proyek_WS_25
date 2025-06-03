@@ -12,6 +12,7 @@ const pokemonRoutes = require("./routes/pokemonRoutes");
 const userRoutes = require("./routes/userRoutes");
 const itemshopRoutes = require("./routes/itemshopRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const buddyRoutes = require('./routes/buddyRoutes');
 
 
 const startServer = async () => {
@@ -22,6 +23,7 @@ const startServer = async () => {
   app.use("/api/v1/items", itemshopRoutes);
   app.use("/api/v1/admin", adminRoutes);
   app.use('/api/media', mediaRoutes);
+  app.use('/api', buddyRoutes);
 
   app.listen(port, () =>
     console.log(`Server running at http://localhost:${port}!`)
