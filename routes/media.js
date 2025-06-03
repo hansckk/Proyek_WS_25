@@ -59,7 +59,8 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// POST /upload - Upload media and optionally set as profile picture
+
+//---------------------------------------------------------------------------------------------------------------------------
 router.post('/upload', authenticateToken, (req, res) => {
   upload.single('file')(req, res, async function (err) {
     if (err) {
@@ -88,9 +89,6 @@ router.post('/upload', authenticateToken, (req, res) => {
         uploadedBy: req.user.id
       });
       await media.save();
-
-      // Optionally set as profile picture if a flag is passed
-      // For example, if req.body.setAsProfile === 'true'
       if (req.body.setAsProfile === 'true' || req.body.setAsProfile === true) {
         await User.findByIdAndUpdate(req.user.id, { profileImage: media._id });
         res.status(201).json({ message: 'Upload successful and set as profile picture.', media });
@@ -108,14 +106,11 @@ router.post('/upload', authenticateToken, (req, res) => {
   });
 });
 
-
-// --- NEW ROUTE TO GET PROFILE IMAGE ---
-// GET /media/profile - Get the authenticated user's profile image
+//---------------------------------------------------------------------------------------------------------------------------
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id; // From authenticateToken middleware
+    const userId = req.user.id; 
 
-    // Find the user and populate their profileImage field (which references a Media document)
     const user = await User.findById(userId).populate('profileImage');
 
     if (!user) {
@@ -123,32 +118,23 @@ router.get('/profile', authenticateToken, async (req, res) => {
     }
 
     if (!user.profileImage) {
-      // User exists but has not set a profile image
-      // You could send a default image or a 404
       return res.status(404).json({ message: 'Profile image not set for this user.' });
     }
 
-    // user.profileImage is now the fully populated Media document
     const media = user.profileImage;
 
-    // Construct the absolute path to the image file
-    // path.resolve() is safer than path.join() for creating absolute paths from potentially relative ones
     const imagePath = path.resolve(media.path);
 
-    // Check if the file actually exists on the filesystem
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
         console.error('Profile image file not found on disk:', imagePath, 'for media ID:', media._id);
-        // This could indicate an orphaned DB record or a misconfiguration
         return res.status(404).json({ message: 'Profile image file not found on server.' });
       }
 
-      // Set the correct content type and send the file
       res.setHeader('Content-Type', media.mimetype);
       res.sendFile(imagePath, (errSendFile) => {
         if (errSendFile) {
             console.error("Error sending profile image:", errSendFile);
-            // Avoid sending another response if headers already sent
             if (!res.headersSent) {
                 res.status(500).json({ message: "Error sending profile image." });
             }
@@ -162,7 +148,6 @@ router.get('/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Optional: Route to serve any media by its ID (if needed for other purposes)
 router.get('/:mediaId', authenticateToken, async (req, res) => {
     try {
         const media = await Media.findById(req.params.mediaId);
@@ -170,8 +155,6 @@ router.get('/:mediaId', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Media not found.' });
         }
 
-        // Basic check: ensure the logged-in user is the one who uploaded it
-        // You might have different authorization rules (e.g., public images)
         if (media.uploadedBy.toString() !== req.user.id.toString()) {
             return res.status(403).json({ message: 'Forbidden: You do not have access to this media.' });
         }
