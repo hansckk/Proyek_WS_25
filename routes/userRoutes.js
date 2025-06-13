@@ -191,6 +191,33 @@ router.put("/forget-password", async (req, res) => {
   }
 });
 
+router.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const userProfile = await User.findById(userId)
+      .select("-username -password -__v")
+      .lean();
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User profile tidak ditemukan." });
+    }
+    if (userProfile.deletedAt) {
+      return res
+        .status(404)
+        .json({ error: "User profile tidak ditemukan atau telah dihapus." });
+    }
+
+    return res.status(200).json({
+      message: "Profil user berhasil didapatkan.",
+      data: userProfile,
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return res.status(500).json({ error: "Terjadi kesalahan pada server." });
+  }
+});
+
 const tradeSchema = Joi.object({
   user_id: Joi.string().required(),
   pokemon_id: Joi.string().required(),

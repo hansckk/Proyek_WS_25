@@ -140,18 +140,16 @@ router.get(
       const imageResponse = await axios({
         method: "get",
         url: pokemon.sprite_url,
-        responseType: "stream", 
+        responseType: "stream",
       });
 
-
-      const contentType = imageResponse.headers["content-type"] || "image/png"; 
+      const contentType = imageResponse.headers["content-type"] || "image/png";
       res.setHeader("Content-Type", contentType);
 
       imageResponse.data.pipe(res);
     } catch (error) {
       console.error("Error fetching Pokémon sprite:", error.message);
       if (error.response && error.response.status === 404) {
-
         return res
           .status(404)
           .json({ message: "Gagal mengambil sprite dari URL sumber." });
