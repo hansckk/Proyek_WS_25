@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   ],
   buddy_pokemon: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'pokemons', 
+    ref: 'pokemon', 
     default: null, 
   },
    profileImage: { // This will store the ObjectId of the Media document
