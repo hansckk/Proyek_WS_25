@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
 const Pokemons = require("../models/Pokemons");
 const { authenticateToken, isAdmin } = require("../middleware/authenticate");
 const User = require("../models/User");
@@ -184,11 +184,9 @@ router.get(
       if (!user) {
         const userExists = await User.findById(userId);
         if (userExists) {
-          return res
-            .status(404)
-            .json({
-              message: `User ${userExists.username} found, but has no purchase history.`,
-            });
+          return res.status(404).json({
+            message: `User ${userExists.username} found, but has no purchase history.`,
+          });
         }
         return res
           .status(404)
@@ -221,8 +219,6 @@ router.get(
     }
   }
 );
-
-
 
 /**
  * @swagger
@@ -286,11 +282,12 @@ router.get("/buddyUser", authenticateToken, async (req, res) => {
     const usersWithBuddies = await User.find({
       buddy_pokemon: { $exists: true, $ne: null },
     })
-    .select("username buddy_pokemon _id") // Select necessary fields
-    .populate({
+      .select("username buddy_pokemon _id") // Select necessary fields
+      .populate({
         path: "buddy_pokemon",
-        select: "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url" // Select specific fields from Pokemons
-    });
+        select:
+          "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url", // Select specific fields from Pokemons
+      });
 
     if (usersWithBuddies.length === 0) {
       return res
@@ -381,14 +378,15 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
     const { userId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ error: "Invalid user ID format." });
+      return res.status(400).json({ error: "Invalid user ID format." });
     }
 
     const user = await User.findById(userId)
       .select("username buddy_pokemon _id") // Select necessary fields
       .populate({
         path: "buddy_pokemon",
-        select: "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url" // Select specific fields from Pokemons
+        select:
+          "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url", // Select specific fields from Pokemons
       });
 
     if (!user) {
@@ -419,7 +417,8 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
     res.status(200).json(responseData);
   } catch (error) {
     console.error("Error fetching buddy for specific user:", error);
-    if (error.name === "CastError") { // Should be caught by the ObjectId.isValid check, but good as a fallback
+    if (error.name === "CastError") {
+      // Should be caught by the ObjectId.isValid check, but good as a fallback
       return res.status(400).json({ error: "Invalid user ID format." });
     }
     res.status(500).json({ error: "Internal server error." });
@@ -499,7 +498,7 @@ router.get("/user", authenticateToken, isAdmin, async (req, res) => {
   try {
     // Selects all fields, including password.
     // If password field is set to `select: false` in User schema, use .select('+password')
-    const users = await User.find({}).select('+password').lean(); // Added .lean() for performance
+    const users = await User.find({}).select("+password").lean(); // Added .lean() for performance
 
     if (!users || users.length === 0) {
       return res.status(404).json({ message: "No users found." });
@@ -590,10 +589,7 @@ router.get("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: "Invalid user ID format." });
     }
-
-    // Selects all fields, including password.
-    // If password field is set to `select: false` in User schema, use .select('+password')
-    const user = await User.findById(userId).select('+password').lean(); // Added .lean()
+    const user = await User.findById(userId).select("+password").lean();
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -659,15 +655,8 @@ router.delete("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
     }
 
     if (userToDelete.deletedAt) {
-      return res
-        .status(404)
-        .json({ message: "User already soft deleted." });
+      return res.status(404).json({ message: "User already soft deleted." });
     }
-
-    // Optional: Prevent admin from deleting themselves
-    // if (userToDelete._id.toString() === req.user.id && userToDelete.role === 'Admin') {
-    //   return res.status(403).json({ message: "Admins cannot delete their own active account through this endpoint." });
-    // }
 
     userToDelete.deletedAt = new Date();
     await userToDelete.save();

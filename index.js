@@ -22,7 +22,7 @@ const startServer = async () => {
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/items", itemshopRoutes);
   app.use("/api/v1/admin", adminRoutes);
-  app.use('/api/media', mediaRoutes);
+  app.use('/api/v1/media', mediaRoutes);
   app.use('/api/v1/buddy', buddyRoutes);
 
   app.listen(port, () =>
