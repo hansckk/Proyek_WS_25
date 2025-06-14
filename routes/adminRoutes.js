@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const Pokemons = require("../models/Pokemons");
 const { authenticateToken, isAdmin } = require("../middleware/authenticate");
 const User = require("../models/User");
+const simpleCache = require("../utils/simpleCache");
 
 /**
  * @swagger
@@ -74,11 +75,27 @@ const User = require("../models/User");
  *       500:
  *         description: Internal server error
  */
+
 router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
+  const cacheKey = 'admin_allUserPurchases'; // Kunci cache spesifik
+  const cacheTTL = 300; // 5 menit
+
   try {
+    // 1. Coba ambil dari cache
+    const cachedData = simpleCache.get(cacheKey);
+    if (cachedData) {
+      return res.status(200).json({
+        message: "User purchases fetched successfully from cache.",
+        source: "cache",
+        data: cachedData
+      });
+    }
+
+    // 2. Jika tidak ada di cache, ambil dari database
     const usersWithItems = await User.find({
-      "items.0": { $exists: true },
-    }).select("username name email pokeDollar items _id");
+      "items.0": { $exists: true }, // Hanya user yang punya item
+      deletedAt: null // Mungkin Anda hanya ingin data dari user aktif
+    }).select("username name email pokeDollar items _id").lean(); // .lean() untuk performa
 
     if (!usersWithItems || usersWithItems.length === 0) {
       return res
@@ -91,7 +108,7 @@ router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
       username: user.username,
       name: user.name,
       email: user.email,
-      pokeDollarBalance: user.pokeDollar,
+      pokeDollarBalance: user.pokeDollar, // Pastikan field ini benar, di User model Anda 'pokeDollar'
       purchasedItems: user.items.map((item) => ({
         name: item.name,
         type: item.type,
@@ -102,13 +119,20 @@ router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
       })),
     }));
 
-    res.status(200).json(purchaseData);
+    // 3. Simpan hasil ke cache
+    simpleCache.set(cacheKey, purchaseData, cacheTTL);
+
+    res.status(200).json({
+      message: "User purchases fetched successfully from database.",
+      source: "database",
+      data: purchaseData
+    });
+
   } catch (error) {
     console.error("Error fetching user purchases for admin:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 /**
  * @swagger
  * /admin/user-purchases/{userId}:
@@ -495,16 +519,40 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
  *         description: Internal server error
  */
 router.get("/user", authenticateToken, isAdmin, async (req, res) => {
-  try {
-    // Selects all fields, including password.
-    // If password field is set to `select: false` in User schema, use .select('+password')
-    const users = await User.find({}).select("+password").lean(); // Added .lean() for performance
+  const cacheKey = 'admin_allActiveUsers';
+  const cacheTTL = 600; // 10 menit
 
-    if (!users || users.length === 0) {
-      return res.status(404).json({ message: "No users found." });
+  try {
+    // 1. Cek cache
+    const cachedUsers = simpleCache.get(cacheKey);
+    if (cachedUsers) {
+      return res.status(200).json({
+        message: "All users fetched successfully from cache.",
+        source: "cache",
+        data: cachedUsers
+      });
     }
 
-    res.status(200).json(users);
+    // 2. Ambil dari DB
+    const users = await User.find({ deletedAt: null }) // Hanya user aktif
+      .select("+password") // Sesuai logika Anda
+      .lean();
+
+    if (!users || users.length === 0) {
+      // Simpan hasil "kosong" ke cache agar tidak query DB terus jika memang kosong
+      simpleCache.set(cacheKey, [], cacheTTL);
+      return res.status(404).json({ message: "No active users found." });
+    }
+
+    // 3. Simpan ke cache
+    simpleCache.set(cacheKey, users, cacheTTL);
+
+    res.status(200).json({
+      message: "All users fetched successfully from database.",
+      source: "database",
+      data: users
+    });
+
   } catch (error) {
     console.error("Error fetching all users for admin:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -670,8 +718,6 @@ router.delete("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
   }
 });
 
-
-
 /**
  * @swagger
  * /admin/users/soft-deleted:
@@ -753,36 +799,41 @@ router.get("/softDeleted", authenticateToken, isAdmin, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post("/restoreUser/:userId", authenticateToken, isAdmin, async (req, res) => {
-  try {
-    const { userId } = req.params;
+router.post(
+  "/restoreUser/:userId",
+  authenticateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ error: "Invalid user ID format." });
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid user ID format." });
+      }
+
+      const userToRestore = await User.findById(userId).select("+password"); // select password to include it in response
+
+      if (!userToRestore) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      if (!userToRestore.deletedAt) {
+        return res.status(400).json({ message: "User is not soft-deleted." });
+      }
+
+      userToRestore.deletedAt = null;
+      await userToRestore.save();
+
+      res.status(200).json({
+        message: "User restored successfully.",
+        user: userToRestore.toObject(), // Convert to plain object for response
+      });
+    } catch (error) {
+      console.error("Error restoring user for admin:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const userToRestore = await User.findById(userId).select("+password"); // select password to include it in response
-
-    if (!userToRestore) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    if (!userToRestore.deletedAt) {
-      return res.status(400).json({ message: "User is not soft-deleted." });
-    }
-
-    userToRestore.deletedAt = null;
-    await userToRestore.save();
-
-    res.status(200).json({
-      message: "User restored successfully.",
-      user: userToRestore.toObject(), // Convert to plain object for response
-    });
-  } catch (error) {
-    console.error("Error restoring user for admin:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+);
 
 /**
  * @swagger
@@ -823,28 +874,33 @@ router.post("/restoreUser/:userId", authenticateToken, isAdmin, async (req, res)
  *       500:
  *         description: Internal server error
  */
-router.delete("/deletePermanent/:userId", authenticateToken, isAdmin, async (req, res) => {
-  try {
-    const { userId } = req.params;
+router.delete(
+  "/deletePermanent/:userId",
+  authenticateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ error: "Invalid user ID format." });
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid user ID format." });
+      }
+
+      const deletedUser = await User.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      res.status(200).json({
+        message: "User permanently deleted successfully.",
+        userId: userId,
+      });
+    } catch (error) {
+      console.error("Error permanently deleting user for admin:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const deletedUser = await User.findByIdAndDelete(userId);
-
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    res.status(200).json({
-      message: "User permanently deleted successfully.",
-      userId: userId,
-    });
-  } catch (error) {
-    console.error("Error permanently deleting user for admin:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+);
 
 module.exports = router;
