@@ -310,7 +310,7 @@ router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   }
 });
 
-router.put("/forget-password", async (req, res) => {
+router.put("/forgetPassword", async (req, res) => {
   try {
     const passwordSchema = Joi.object({
       username: Joi.string().required(),

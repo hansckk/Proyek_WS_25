@@ -670,4 +670,181 @@ router.delete("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /admin/users/soft-deleted:
+ *   get:
+ *     summary: (ADMIN) Get all soft-deleted users
+ *     tags: [Admin - User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all soft-deleted users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserAdminView'
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       404:
+ *         description: No soft-deleted users found.
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/softDeleted", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const softDeletedUsers = await User.find({ deletedAt: { $ne: null } })
+      .select("+password") // Include password for admin view
+      .lean();
+
+    if (!softDeletedUsers || softDeletedUsers.length === 0) {
+      return res.status(404).json({ message: "No soft-deleted users found." });
+    }
+
+    res.status(200).json(softDeletedUsers);
+  } catch (error) {
+    console.error("Error fetching soft-deleted users for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * @swagger
+ * /admin/user/restore/{userId}:
+ *   post:
+ *     summary: (ADMIN) Restore a soft-deleted user by ID
+ *     tags: [Admin - User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to restore.
+ *     responses:
+ *       200:
+ *         description: User restored successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   $ref: '#/components/schemas/UserAdminView'
+ *       400:
+ *         description: Invalid user ID format, or user is not soft-deleted.
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/restoreUser/:userId", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format." });
+    }
+
+    const userToRestore = await User.findById(userId).select("+password"); // select password to include it in response
+
+    if (!userToRestore) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (!userToRestore.deletedAt) {
+      return res.status(400).json({ message: "User is not soft-deleted." });
+    }
+
+    userToRestore.deletedAt = null;
+    await userToRestore.save();
+
+    res.status(200).json({
+      message: "User restored successfully.",
+      user: userToRestore.toObject(), // Convert to plain object for response
+    });
+  } catch (error) {
+    console.error("Error restoring user for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * @swagger
+ * /admin/user/permanent/{userId}:
+ *   delete:
+ *     summary: (ADMIN) Permanently delete a user by ID
+ *     tags: [Admin - User Management]
+ *     description: This action is irreversible and will remove the user data from the database.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to permanently delete.
+ *     responses:
+ *       200:
+ *         description: User permanently deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 userId:
+ *                   type: string
+ *       400:
+ *         description: Invalid user ID format.
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/deletePermanent/:userId", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format." });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: "User permanently deleted successfully.",
+      userId: userId,
+    });
+  } catch (error) {
+    console.error("Error permanently deleting user for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
