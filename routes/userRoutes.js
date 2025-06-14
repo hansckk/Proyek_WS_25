@@ -76,13 +76,74 @@ router.post("/register", async (req, res) => {
     const createUser = await User.create(newUser);
 
     return res.status(201).json({
-      message: "Berhasil daftar!",
-      username: createUser.username,
+      message: `Registrasi berhasil! Akun untuk username '${createUser.username}' telah dibuat. Selamat datang!`,
+      data: {
+        id: createUser._id,
+        username: createUser.username,
+        email: createUser.email,
+        role: createUser.role,
+      }
     });
   } catch (error) {
     return res.status(500).json(error.message);
   }
 });
+
+
+router.post("/register/admin", async (req, res) => {
+  try {
+    const schema = Joi.object({
+      name: Joi.string().required(),
+      username: Joi.string().min(5).required(),
+      password: Joi.string().min(6).required(),
+      email: Joi.string().email().required(),
+      age: Joi.number().integer().min(6).required(), // Admins also have age for consistency, can be adjusted
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const existingUser = await User.findOne({ username: req.body.username });
+    if (existingUser) {
+      return res.status(400).json({ error: "Username sudah ada!" });
+    }
+
+    const existingEmail = await User.findOne({ email: req.body.email });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email sudah terdaftar!" });
+    }
+
+    var newAdmin = new User();
+    newAdmin.name = req.body.name;
+    newAdmin.username = req.body.username;
+    newAdmin.password = await argon2.hash(req.body.password);
+    newAdmin.email = req.body.email;
+    newAdmin.age = req.body.age;
+    newAdmin.createdAt = new Date();
+    newAdmin.updatedAt = new Date();
+    newAdmin.deletedAt = null;
+    newAdmin.pokemon_storage = 999999999; 
+    newAdmin.pokeDollar = 99999999999999999;      
+    newAdmin.role = "Admin";      
+
+    const createAdmin = await User.create(newAdmin);
+
+    return res.status(201).json({
+      message: `Registrasi berhasil! Admin untuk username '${createAdmin.username}' telah dibuat. Selamat datang!`,
+      data: {
+        id: createAdmin._id,
+        username: createAdmin.username,
+        email: createAdmin.email,
+        role: createAdmin.role,
+      }
+    });
+  } catch (error) {
+    console.error("Admin registration error:", error);
+    return res.status(500).json({ error: error.message || "Internal server error during admin registration." });
+  }
+});
+
 
 router.post("/login", async (req, res) => {
   try {
@@ -124,6 +185,109 @@ router.post("/login", async (req, res) => {
     return res.status(500).json(error.message);
   }
 });
+
+
+router.put("/changeUser", authenticateToken, async (req, res) => {
+  try {
+    const updateUserSchema = Joi.object({
+      name: Joi.string().optional(),
+      username: Joi.string().min(5).optional(),
+      password: Joi.string().min(6).optional(), 
+      email: Joi.string().email().optional(),
+      age: Joi.number().integer().min(6).optional(),
+    })
+      .min(1) 
+      .messages({
+        "object.min":
+          "Setidaknya satu field (name, username, password, email, age) harus diisi untuk update.",
+      });
+
+    const { error, value } = updateUserSchema.validate(req.body); 
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const userId = req.user.id;
+    const userToUpdate = await User.findById(userId);
+
+    if (!userToUpdate || userToUpdate.deletedAt) {
+      return res
+        .status(404)
+        .json({ error: "User tidak ditemukan atau telah dihapus." });
+    }
+
+    let updated = false;
+
+    if (value.username && value.username !== userToUpdate.username) {
+      const existingUser = await User.findOne({ username: value.username });
+      if (existingUser) {
+        return res.status(400).json({ error: "Username sudah ada!" });
+      }
+      userToUpdate.username = value.username;
+      updated = true;
+    }
+
+    if (value.email && value.email !== userToUpdate.email) {
+      const existingEmail = await User.findOne({ email: value.email });
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email sudah terdaftar!" });
+      }
+      userToUpdate.email = value.email;
+      updated = true;
+    }
+
+    if (value.name && value.name !== userToUpdate.name) {
+      userToUpdate.name = value.name;
+      updated = true;
+    }
+
+    if (value.password) {
+      userToUpdate.password = await argon2.hash(value.password);
+      updated = true;
+    }
+
+    if (value.age && value.age !== userToUpdate.age) {
+      userToUpdate.age = value.age;
+      updated = true;
+    }
+
+    if (updated) {
+      userToUpdate.updatedAt = new Date();
+      await userToUpdate.save();
+
+      return res.status(200).json({
+        message: "Profil berhasil diperbarui.",
+        data: {
+          id: userToUpdate._id,
+          name: userToUpdate.name,
+          username: userToUpdate.username,
+          email: userToUpdate.email,
+          age: userToUpdate.age,
+          role: userToUpdate.role, 
+        },
+      });
+    } else {
+      return res.status(200).json({
+        message: "Tidak ada data yang diubah.",
+        data: {
+          id: userToUpdate._id,
+          name: userToUpdate.name,
+          username: userToUpdate.username,
+          email: userToUpdate.email,
+          age: userToUpdate.age,
+          role: userToUpdate.role,
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return res.status(500).json({ error: "Terjadi kesalahan pada server." });
+  }
+});
+
+
+//
+
 
 router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   try {

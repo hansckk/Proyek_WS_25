@@ -72,7 +72,7 @@ const User = require("../models/User");
  *       500:
  *         description: Internal server error
  */
-router.get("/user-purchases", authenticateToken, isAdmin, async (req, res) => {
+router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
   try {
     const usersWithItems = await User.find({
       "items.0": { $exists: true },
@@ -168,7 +168,7 @@ router.get("/user-purchases", authenticateToken, isAdmin, async (req, res) => {
  *         description: Internal server error
  */
 router.get(
-  "/user-purchases/:userId",
+  "/purchases/:userId",
   authenticateToken,
   isAdmin,
   async (req, res) => {
