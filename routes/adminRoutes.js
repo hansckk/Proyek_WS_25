@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
+const mongoose = require("mongoose"); 
 const Pokemons = require("../models/Pokemons");
 const { authenticateToken, isAdmin } = require("../middleware/authenticate");
 const User = require("../models/User");
@@ -425,5 +426,259 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * tags:
+ *   name: Admin - User Management
+ *   description: Admin routes for managing users
+ */
+
+/**
+ * @swagger
+ * /admin/user:
+ *   get:
+ *     summary: (ADMIN) Get all users' information
+ *     tags: [Admin - User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all users with their full details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                   password:
+ *                     type: string
+ *                     description: Hashed password of the user.
+ *                   age:
+ *                     type: number
+ *                   role:
+ *                     type: string
+ *                   pokeDollar:
+ *                     type: number
+ *                   pokemon_storage:
+ *                     type: number
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: object # Define item structure if known, or keep generic
+ *                   buddy_pokemon:
+ *                     type: string # Or object if populated
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   deletedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/user", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    // Selects all fields, including password.
+    // If password field is set to `select: false` in User schema, use .select('+password')
+    const users = await User.find({}).select('+password').lean(); // Added .lean() for performance
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found." });
+    }
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching all users for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * @swagger
+ * /admin/user/{userId}:
+ *   get:
+ *     summary: (ADMIN) Get specific user's information by ID
+ *     tags: [Admin - User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to retrieve.
+ *     responses:
+ *       200:
+ *         description: Full details of the specified user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                 password:
+ *                   type: string
+ *                   description: Hashed password of the user.
+ *                 age:
+ *                   type: number
+ *                 role:
+ *                   type: string
+ *                 pokeDollar:
+ *                   type: number
+ *                 pokemon_storage:
+ *                   type: number
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object # Define item structure if known, or keep generic
+ *                 buddy_pokemon:
+ *                   type: string # Or object if populated
+ *                   nullable: true
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                 deletedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   nullable: true
+ *       400:
+ *         description: Invalid user ID format.
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format." });
+    }
+
+    // Selects all fields, including password.
+    // If password field is set to `select: false` in User schema, use .select('+password')
+    const user = await User.findById(userId).select('+password').lean(); // Added .lean()
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching specific user for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * @swagger
+ * /admin/user/{userId}:
+ *   delete:
+ *     summary: (ADMIN) Soft delete a user by ID
+ *     tags: [Admin - User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to delete.
+ *     responses:
+ *       200:
+ *         description: User soft deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 userId:
+ *                   type: string
+ *       400:
+ *         description: Invalid user ID format.
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       403:
+ *         description: Forbidden (user is not an admin)
+ *       404:
+ *         description: User not found or already deleted.
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format." });
+    }
+
+    const userToDelete = await User.findById(userId);
+
+    if (!userToDelete) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (userToDelete.deletedAt) {
+      return res
+        .status(404)
+        .json({ message: "User already soft deleted." });
+    }
+
+    // Optional: Prevent admin from deleting themselves
+    // if (userToDelete._id.toString() === req.user.id && userToDelete.role === 'Admin') {
+    //   return res.status(403).json({ message: "Admins cannot delete their own active account through this endpoint." });
+    // }
+
+    userToDelete.deletedAt = new Date();
+    await userToDelete.save();
+
+    res
+      .status(200)
+      .json({ message: "User soft deleted successfully.", userId: userId });
+  } catch (error) {
+    console.error("Error soft deleting user for admin:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
