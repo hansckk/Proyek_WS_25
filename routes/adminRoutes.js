@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const axios = require("axios");
+const Pokemons = require("../models/Pokemons");
 const { authenticateToken, isAdmin } = require("../middleware/authenticate");
 const User = require("../models/User");
 
@@ -219,5 +220,210 @@ router.get(
     }
   }
 );
+
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Buddy Pokémon
+ *   description: Manage and view buddy Pokémon assignments
+ */
+
+/**
+ * @swagger
+ * /buddyUser:
+ *   get:
+ *     summary: Get all users and their assigned buddy Pokémon
+ *     tags: [Buddy Pokémon]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users and their buddy Pokémon.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       userId:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       buddy_pokemon:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           pokedex_entries:
+ *                             type: number
+ *                           level:
+ *                             type: number
+ *                           exp:
+ *                             type: number
+ *                           types:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           sprite_url:
+ *                             type: string
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/buddyUser", authenticateToken, async (req, res) => {
+  try {
+    const usersWithBuddies = await User.find({
+      buddy_pokemon: { $exists: true, $ne: null },
+    })
+    .select("username buddy_pokemon _id") // Select necessary fields
+    .populate({
+        path: "buddy_pokemon",
+        select: "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url" // Select specific fields from Pokemons
+    });
+
+    if (usersWithBuddies.length === 0) {
+      return res
+        .status(200) // Keeping 200 as per original logic for "no users found"
+        .json({ message: "No users with buddy Pokémon found." });
+    }
+
+    const result = usersWithBuddies.map((user) => ({
+      userId: user._id, // Added userId
+      username: user.username,
+      buddy_pokemon: user.buddy_pokemon
+        ? {
+            name: user.buddy_pokemon.pokemon_name,
+            pokedex_entries: user.buddy_pokemon.pokedex_entries,
+            level: user.buddy_pokemon.pokemon_level,
+            exp: user.buddy_pokemon.pokemon_exp,
+            types: user.buddy_pokemon.pokemon_types,
+            sprite_url: user.buddy_pokemon.sprite_url,
+          }
+        : null,
+    }));
+
+    res.status(200).json({
+      message: `Found ${result.length} users with buddy Pokémon.`,
+      users: result,
+    });
+  } catch (error) {
+    console.error("Error fetching users with buddies:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+/**
+ * @swagger
+ * /buddyUser/{userId}:
+ *   get:
+ *     summary: Get buddy Pokémon for a specific user
+ *     tags: [Buddy Pokémon]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to retrieve buddy Pokémon for.
+ *     responses:
+ *       200:
+ *         description: Buddy Pokémon details for the specified user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 buddy_pokemon:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     pokedex_entries:
+ *                       type: number
+ *                     level:
+ *                       type: number
+ *                     exp:
+ *                       type: number
+ *                     types:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     sprite_url:
+ *                       type: string
+ *       400:
+ *         description: Invalid user ID format.
+ *       401:
+ *         description: Unauthorized (token missing or invalid)
+ *       404:
+ *         description: User not found, or user has no buddy Pokémon assigned.
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid user ID format." });
+    }
+
+    const user = await User.findById(userId)
+      .select("username buddy_pokemon _id") // Select necessary fields
+      .populate({
+        path: "buddy_pokemon",
+        select: "pokemon_name pokedex_entries pokemon_level pokemon_exp pokemon_types sprite_url" // Select specific fields from Pokemons
+      });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (!user.buddy_pokemon) {
+      return res.status(404).json({
+        message: `User ${user.username} has no buddy Pokémon assigned.`,
+        userId: user._id,
+        username: user.username,
+      });
+    }
+
+    const responseData = {
+      userId: user._id,
+      username: user.username,
+      buddy_pokemon: {
+        name: user.buddy_pokemon.pokemon_name,
+        pokedex_entries: user.buddy_pokemon.pokedex_entries,
+        level: user.buddy_pokemon.pokemon_level,
+        exp: user.buddy_pokemon.pokemon_exp,
+        types: user.buddy_pokemon.pokemon_types,
+        sprite_url: user.buddy_pokemon.sprite_url,
+      },
+    };
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error("Error fetching buddy for specific user:", error);
+    if (error.name === "CastError") { // Should be caught by the ObjectId.isValid check, but good as a fallback
+      return res.status(400).json({ error: "Invalid user ID format." });
+    }
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
 
 module.exports = router;

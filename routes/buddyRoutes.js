@@ -105,4 +105,9 @@ router.post("/assign/:pokedex_entries", authenticateToken, async (req, res) => {
   }
 });
 
+
+
+
+
+
 module.exports = router;
