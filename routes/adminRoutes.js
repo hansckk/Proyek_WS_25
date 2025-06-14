@@ -77,25 +77,25 @@ const simpleCache = require("../utils/simpleCache");
  */
 
 router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
-  const cacheKey = 'admin_allUserPurchases'; // Kunci cache spesifik
-  const cacheTTL = 300; // 5 menit
+  const cacheKey = "admin_allUserPurchases";
+  const cacheTTL = 60; // 60sec
 
   try {
-    // 1. Coba ambil dari cache
     const cachedData = simpleCache.get(cacheKey);
     if (cachedData) {
       return res.status(200).json({
         message: "User purchases fetched successfully from cache.",
         source: "cache",
-        data: cachedData
+        data: cachedData,
       });
     }
 
-    // 2. Jika tidak ada di cache, ambil dari database
     const usersWithItems = await User.find({
-      "items.0": { $exists: true }, // Hanya user yang punya item
-      deletedAt: null // Mungkin Anda hanya ingin data dari user aktif
-    }).select("username name email pokeDollar items _id").lean(); // .lean() untuk performa
+      "items.0": { $exists: true },
+      deletedAt: null,
+    })
+      .select("username name email pokeDollar items _id")
+      .lean();
 
     if (!usersWithItems || usersWithItems.length === 0) {
       return res
@@ -108,7 +108,7 @@ router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
       username: user.username,
       name: user.name,
       email: user.email,
-      pokeDollarBalance: user.pokeDollar, // Pastikan field ini benar, di User model Anda 'pokeDollar'
+      pokeDollarBalance: user.pokeDollar,
       purchasedItems: user.items.map((item) => ({
         name: item.name,
         type: item.type,
@@ -119,15 +119,13 @@ router.get("/purchases", authenticateToken, isAdmin, async (req, res) => {
       })),
     }));
 
-    // 3. Simpan hasil ke cache
     simpleCache.set(cacheKey, purchaseData, cacheTTL);
 
     res.status(200).json({
       message: "User purchases fetched successfully from database.",
       source: "database",
-      data: purchaseData
+      data: purchaseData,
     });
-
   } catch (error) {
     console.error("Error fetching user purchases for admin:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -306,7 +304,7 @@ router.get("/buddyUser", authenticateToken, async (req, res) => {
     const usersWithBuddies = await User.find({
       buddy_pokemon: { $exists: true, $ne: null },
     })
-      .select("username buddy_pokemon _id") // Select necessary fields
+      .select("username buddy_pokemon _id")
       .populate({
         path: "buddy_pokemon",
         select:
@@ -315,12 +313,12 @@ router.get("/buddyUser", authenticateToken, async (req, res) => {
 
     if (usersWithBuddies.length === 0) {
       return res
-        .status(200) // Keeping 200 as per original logic for "no users found"
+        .status(200)
         .json({ message: "No users with buddy Pokémon found." });
     }
 
     const result = usersWithBuddies.map((user) => ({
-      userId: user._id, // Added userId
+      userId: user._id,
       username: user.username,
       buddy_pokemon: user.buddy_pokemon
         ? {
@@ -406,7 +404,7 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
     }
 
     const user = await User.findById(userId)
-      .select("username buddy_pokemon _id") // Select necessary fields
+      .select("username buddy_pokemon _id")
       .populate({
         path: "buddy_pokemon",
         select:
@@ -442,7 +440,6 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching buddy for specific user:", error);
     if (error.name === "CastError") {
-      // Should be caught by the ObjectId.isValid check, but good as a fallback
       return res.status(400).json({ error: "Invalid user ID format." });
     }
     res.status(500).json({ error: "Internal server error." });
@@ -519,40 +516,34 @@ router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
  *         description: Internal server error
  */
 router.get("/user", authenticateToken, isAdmin, async (req, res) => {
-  const cacheKey = 'admin_allActiveUsers';
-  const cacheTTL = 600; // 10 menit
-
+  const cacheKey = "admin_allActiveUsers";
+  const cacheTTL = 60;
   try {
-    // 1. Cek cache
     const cachedUsers = simpleCache.get(cacheKey);
     if (cachedUsers) {
       return res.status(200).json({
         message: "All users fetched successfully from cache.",
         source: "cache",
-        data: cachedUsers
+        data: cachedUsers,
       });
     }
 
-    // 2. Ambil dari DB
-    const users = await User.find({ deletedAt: null }) // Hanya user aktif
-      .select("+password") // Sesuai logika Anda
+    const users = await User.find({ deletedAt: null })
+      .select("+password")
       .lean();
 
     if (!users || users.length === 0) {
-      // Simpan hasil "kosong" ke cache agar tidak query DB terus jika memang kosong
       simpleCache.set(cacheKey, [], cacheTTL);
       return res.status(404).json({ message: "No active users found." });
     }
 
-    // 3. Simpan ke cache
     simpleCache.set(cacheKey, users, cacheTTL);
 
     res.status(200).json({
       message: "All users fetched successfully from database.",
       source: "database",
-      data: users
+      data: users,
     });
-
   } catch (error) {
     console.error("Error fetching all users for admin:", error);
     res.status(500).json({ error: "Internal Server Error" });
