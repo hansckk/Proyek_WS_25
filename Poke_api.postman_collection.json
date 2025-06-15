@@ -1,0 +1,1752 @@
+{
+	"info": {
+		"_postman_id": "8c557f0e-a9f8-47e5-bb21-0464fb17bf6e",
+		"name": "Poke_api",
+		"description": "# 📄 Get started here\n\nThis template contains a boilerplate for documentation that you can quickly customize and reuse.\n\n## 🔖 How to use this template\n\n- Replace the content given brackets (()) with your API's details.\n    \n- Tips are formatted in `codespan` - feel free to read and remove them.\n    \n\n---\n\n`Start with a brief overview of what your API offers.`\n\nThe ((product name)) provides many API products, tools, and resources that enable you to ((add product value here)).\n\n`You can also list the APIs you offer, link to the relevant pages, or do both in this section.`\n\n## **Getting started guide**\n\n`List the steps or points required to start using your APIs. Make sure to cover everything required to reach success with your API as quickly as possible.`\n\nTo start using the ((add APIs here)), you need to -\n\n`The points given below are from The Postman API's documentation. You can reference it to write your own getting started guide.`\n\n- You must use a valid API Key to send requests to the API endpoints. You can get your API key from Postman's [integrations dashboard](https://go.postman.co/settings/me/api-keys).\n    \n- The API has [rate and usage limits](https://learning.postman.com/docs/developer/postman-api/postman-api-rate-limits/).\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- The API returns request responses in JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n\n## Authentication\n\n`Add details on the authorization keys/tokens required, steps that cover how to get them, and the relevant error codes.`\n\nThe ((product name)) API uses ((add your API's authorization type)) for authentication.\n\n`The details given below are from the Postman API's documentation. You can reference it to write your own authentication section.`\n\nPostman uses API keys for authentication. You can generate a Postman API key in the [API keys](https://postman.postman.co/settings/me/api-keys) section of your Postman account settings.\n\nYou must include an API key in each request to the Postman API with the X-Api-Key request header.\n\n### Authentication error response\n\nIf an API key is missing, malformed, or invalid, you will receive an HTTP 401 Unauthorized response code.\n\n## Rate and usage limits\n\n`Use this section to cover your APIs' terms of use. Include API limits, constraints, and relevant error codes, so consumers understand the permitted API usage and practices.`\n\n`The example given below is from The Postman API's documentation. Use it as a reference to write your APIs' terms of use.`\n\nAPI access rate limits apply at a per-API key basis in unit time. The limit is 300 requests per minute. Also, depending on your plan, you may have usage limits. If you exceed either limit, your request will return an HTTP 429 Too Many Requests status code.\n\nEach API response returns the following set of headers to help you identify your use status:\n\n| Header | Description |\n| --- | --- |\n| `X-RateLimit-Limit` | The maximum number of requests that the consumer is permitted to make per minute. |\n| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window. |\n| `X-RateLimit-Reset` | The time at which the current rate limit window resets in UTC epoch seconds. |\n\n### 503 response\n\nAn HTTP `503` response from our servers indicates there is an unexpected spike in API access traffic. The server is usually operational within the next five minutes. If the outage persists or you receive any other form of an HTTP `5XX` error, [contact support](https://support.postman.com/hc/en-us/requests/new/).\n\n### **Need some help?**\n\n`Add links that customers can refer to whenever they need help.`\n\nIn case you have questions, go through our tutorials ((link to your video or help documentation here)). Or visit our FAQ page ((link to the relevant page)).\n\nOr you can check out our community forum, there’s a good chance our community has an answer for you. Visit our developer forum ((link to developer forum)) to review topics, ask questions, and learn from others.\n\n`You can also document or add links to libraries, code examples, and other resources needed to make a request.`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42817578"
+	},
+	"item": [
+		{
+			"name": "get-pokemon",
+			"item": [
+				{
+					"name": "[GET] untuk mendapatkan pokemon user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4IiwiaWF0IjoxNzQ4ODYxOTM3LCJleHAiOjE3NDg4NjU1Mzd9.3PJPC08_4_WABFOMMe-C9e5aRPLpDRf9kl8UK--B98I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/get-pokemon/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"get-pokemon",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] menangkap pokemon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDg4NjU1NzcsImV4cCI6MTc0ODg2OTE3N30.DhGmJcwELcP0qmST62s45nMndewoS8Sxs7Ko2tSbyVU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/catch/:pokemon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"catch",
+								":pokemon"
+							],
+							"variable": [
+								{
+									"key": "pokemon",
+									"value": "pichu"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] mendapatkan pokemon",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4IiwiaWF0IjoxNzQ4ODYxOTM3LCJleHAiOjE3NDg4NjU1Mzd9.3PJPC08_4_WABFOMMe-C9e5aRPLpDRf9kl8UK--B98I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/get-pokemon/:pokemon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"get-pokemon",
+								":pokemon"
+							],
+							"variable": [
+								{
+									"key": "pokemon",
+									"value": "789"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dapet sprite pokemon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDg4NjU1NzcsImV4cCI6MTc0ODg2OTE3N30.DhGmJcwELcP0qmST62s45nMndewoS8Sxs7Ko2tSbyVU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/pokemon-sprite/:pokemonId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"pokemon-sprite",
+								":pokemonId"
+							],
+							"variable": [
+								{
+									"key": "pokemonId",
+									"value": "683d92347d7edabf502a6888"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET untuk mendapatkan pokemon",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/get-pokemon/?pokemon_name=charizard",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"get-pokemon",
+								""
+							],
+							"query": [
+								{
+									"key": "pokemon_name",
+									"value": "charizard"
+								},
+								{
+									"key": "pokedex_entries",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "catch pokemon",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGM0NzcyMmJmYWM4OWY4YTM1ZjgyNiIsInVzZXJuYW1lIjoiamFzb25uIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk4ODEzNzIsImV4cCI6MTc0OTg4NDk3Mn0.ERzWbooNfUT6TEbmtBEgHzAHBhQkcEDSqu78ombwfvE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/pokemon/catch/cyndaquil",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"pokemon",
+								"catch",
+								"cyndaquil"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The `/me` endpoints let you manage information about the authenticated user."
+		},
+		{
+			"name": "login - regist - forget pw",
+			"item": [
+				{
+					"name": "REGISTER sukses",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "agus bengkel",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "agus12",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "agusbengkel@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "69",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER ( required)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "hans",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "hans12",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "hansKebab@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER username length",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "hans",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "hans",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "hansKebab@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER password length",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "hans",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "hans12",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "hansKebab@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER validation email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "hans",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "hans12",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "hansKebabgmail.com",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "admin@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "adminn",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "99",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/register/admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN user sukses",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "agus12",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN user all validation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "hans12",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN user password salah",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "jasonn",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "jason",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4IiwiaWF0IjoxNzQ4ODYxOTM3LCJleHAiOjE3NDk0NjY3Mzd9.hRtlxXcMoL-S64EDquxhk9x7ceQ_akWco5tfK_p5WjA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/refresh-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EDIT User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDgwNTk1ODk1ODQyNDExOWQ2MCIsInVzZXJuYW1lIjoiaXJ2aW4iLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTg4MDIwNiwiZXhwIjoxNzQ5ODgzODA2fQ.XWM1ttO05jgXlmPcVnN9YYqzn4NakgtsPpuAvfvoC0o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "irpin",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "irpin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "age",
+									"value": "12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/changeUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"changeUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgetPassword",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "agus12",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "agusbengkel@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "new_password",
+									"value": "pass1233",
+									"type": "text"
+								},
+								{
+									"key": "confirm_new_password",
+									"value": "pass1233",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/forgetPassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"forgetPassword"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "UP profile true",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQ2MDcwMGE3NTJlY2I3MTU5ODBmOSIsInVzZXJuYW1lIjoiYWd1czEyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5MTk4NTksImV4cCI6MTc0OTkyMzQ1OX0.1NBucrjxJHtQm12FP_teHn67P_XgKWp2RNGGRJmho3w",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "customFilename",
+									"value": "yoshi",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/yoshiBotak2.jpg"
+								},
+								{
+									"key": "setAsProfile",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/media/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UP foto biasa",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQ2MDcwMGE3NTJlY2I3MTU5ODBmOSIsInVzZXJuYW1lIjoiYWd1czEyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5MTk4NTksImV4cCI6MTc0OTkyMzQ1OX0.1NBucrjxJHtQm12FP_teHn67P_XgKWp2RNGGRJmho3w",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "customFilename",
+									"value": "a1",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/yoshiBotak2.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/media/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user tanpa profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQ2MDcwMGE3NTJlY2I3MTU5ODBmOSIsInVzZXJuYW1lIjoiYWd1czEyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5MjAxMjAsImV4cCI6MTc0OTkyMzcyMH0.oot1jW_B4iYEQ9ToAAm0OSZvIiv_mEbHhM7ZL7eTX-c",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/media/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user dengan profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGM0NzcyMmJmYWM4OWY4YTM1ZjgyNiIsInVzZXJuYW1lIjoiamFzb25uIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5MjAyMTEsImV4cCI6MTc0OTkyMzgxMX0.fpN463xnrXsqF37luk6EPLZ0K2kyLGs7SF_Ud38LFmc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/media/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shop",
+			"item": [
+				{
+					"name": "Get Shop items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Shop items by name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/shop/potion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"shop",
+								"potion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buy Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "item_name",
+									"value": "Potion",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/shop/buy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"shop",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "item_name",
+									"value": "Potion",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/shop/buy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"shop",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Mjolnir",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "Hammer?",
+									"type": "text"
+								},
+								{
+									"key": "effect",
+									"value": "lightning",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "9999",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "rarity",
+									"value": "legendary",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/684e5cf91d2e0e30e89bc8c9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"684e5cf91d2e0e30e89bc8c9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "get shop by admin",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk4ODAxMDAsImV4cCI6MTc0OTg4MzcwMH0.S8asFbAyI99dv53lZWfH2tGpahSBBUWuYX_1ifUVR5o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/purchases",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"purchases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get buddy by admin",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get All user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk4OTg3ODAsImV4cCI6MTc0OTkwMjM4MH0.X7sm_rmEP4L2dZ2Loc7R4O8iY7KxhlV8Npq0fjtazrI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk4OTg3ODAsImV4cCI6MTc0OTkwMjM4MH0.X7sm_rmEP4L2dZ2Loc7R4O8iY7KxhlV8Npq0fjtazrI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/user/684c47722bfac89f8a35f826",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"684c47722bfac89f8a35f826"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "softDelete by userId",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk5MjEzNjIsImV4cCI6MTc0OTkyNDk2Mn0.k06fdUIWRTv9KdtRvMEHE-0E5bMoXMUGnEYhaBlEA5A",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/user/684d0d805958958424119d60",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"user",
+								"684d0d805958958424119d60"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all softDeleted",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk5MjM5MTEsImV4cCI6MTc0OTkyNzUxMX0.l-q7_alWczFx8rV5MZWZ9eMm1TInCFpyhWN5AyftXGA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/softDeleted",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"softDeleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "restore softDelete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk5MjM5MTEsImV4cCI6MTc0OTkyNzUxMX0.l-q7_alWczFx8rV5MZWZ9eMm1TInCFpyhWN5AyftXGA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/restoreUser/684d0d805958958424119d60",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"restoreUser",
+								"684d0d805958958424119d60"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deletePermanent by userId",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGQwZDFlNTk1ODk1ODQyNDExOWQ1OSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NDk5MjM5MTEsImV4cCI6MTc0OTkyNzUxMX0.l-q7_alWczFx8rV5MZWZ9eMm1TInCFpyhWN5AyftXGA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/admin/deletePermanent/684d0f52fb4ea3c045535b44",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"deletePermanent",
+								"684d0f52fb4ea3c045535b44"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "buddy",
+			"item": [
+				{
+					"name": "Get buddy info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign buddy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy/assign/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy",
+								"assign",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Buddy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "pokedex_entries",
+									"value": "25",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy/684c0954035f3944b8c702d1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy",
+								"684c0954035f3944b8c702d1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Buddy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy/remove/25",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy",
+								"remove",
+								"25"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "trade Pokemon",
+			"item": [
+				{
+					"name": "buat trade",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhmMCIsInVzZXJuYW1lIjoiUmVhbm5hLkNyb29rcyIsImlhdCI6MTc0ODA3MTI1NywiZXhwIjoxNzQ4MDc0ODU3fQ.fe9B0wzuELH2T9qO8iz6l7m7GxKlG0c_mDAulf_pUW4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "683172714ad4df6ccf5128ef",
+									"type": "text"
+								},
+								{
+									"key": "pokemon_id",
+									"value": "6831739e39bbd1893cd793cc",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/trade",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"trade"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept trade",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE3MjcxNGFkNGRmNmNjZjUxMjhlZiIsInVzZXJuYW1lIjoiSGF5bGV5X01vbmFoYW4tV2lsbGlhbXNvbjU4IiwiaWF0IjoxNzQ4ODYxOTM3LCJleHAiOjE3NDg4NjU1Mzd9.3PJPC08_4_WABFOMMe-C9e5aRPLpDRf9kl8UK--B98I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "receiver_offered_pokemon_id",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/user/trade/:trade_id/:trade_status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"trade",
+								":trade_id",
+								":trade_status"
+							],
+							"variable": [
+								{
+									"key": "trade_id",
+									"value": "683178615fff58cc198cfea6"
+								},
+								{
+									"key": "trade_status",
+									"value": "accept"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "X-API-Key",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://farming-simulator.pstmn.io"
+		}
+	]
+}
