@@ -1212,11 +1212,24 @@
 				},
 				{
 					"name": "Get Shop items by name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
 						"url": {
-							"raw": "http://localhost:3000/api/v1/items/",
+							"raw": "http://localhost:3000/api/v1/items/shop/potion",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1226,7 +1239,8 @@
 								"api",
 								"v1",
 								"items",
-								""
+								"shop",
+								"potion"
 							]
 						}
 					},
@@ -1239,7 +1253,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjczNTllZjNhMWMyMDUyYzNjOTNkYSIsInVzZXJuYW1lIjoiaXJ2aW50ZXN1c2VyIiwicm9sZSI6IkZyZWUiLCJpYXQiOjE3NDc0MDUzNzEsImV4cCI6MTc0NzQwODk3MX0.YyLKb269kRehtAGK7ASErnPuChISOlV3NLERIW_y-Wo",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
 								"type": "text"
 							}
 						],
@@ -1275,6 +1289,107 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "item_name",
+									"value": "Potion",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/shop/buy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"shop",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Mjolnir",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "Hammer?",
+									"type": "text"
+								},
+								{
+									"key": "effect",
+									"value": "lightning",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "9999",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "rarity",
+									"value": "legendary",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/items/684e5cf91d2e0e30e89bc8c9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"684e5cf91d2e0e30e89bc8c9"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1283,9 +1398,35 @@
 			"item": [
 				{
 					"name": "Get buddy info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy"
+							]
+						}
 					},
 					"response": []
 				},
@@ -1296,12 +1437,16 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4M2YwNTI3ZWIzODg1Mzk3NGE2N2NjZiIsInVzZXJuYW1lIjoidGVzczEyMyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQ4OTYyMDU4LCJleHAiOjE3NDg5NjU2NTh9.DKA8q5pNtcEWYYgBRpdvvhu-AnxAYCqTS1iDmPlPS7M",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
 						"url": {
-							"raw": "http://localhost:3000/api/v1/buddy/assign/25",
+							"raw": "http://localhost:3000/api/v1/buddy/assign/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1312,6 +1457,67 @@
 								"v1",
 								"buddy",
 								"assign",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Buddy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NGMwOTU0MDM1ZjM5NDRiOGM3MDJkMSIsInVzZXJuYW1lIjoiaXJ2aWIxMjM0Iiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk5NjAxMzUsImV4cCI6MTc0OTk2MzczNX0.Fpz0PKGDdFIv7zyVCXrH8YGTt4JwNlhuOiKsVaHli74",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "pokedex_entries",
+									"value": "25",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy/684c0954035f3944b8c702d1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy",
+								"684c0954035f3944b8c702d1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Buddy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/buddy/remove/25",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"buddy",
+								"remove",
 								"25"
 							]
 						}
