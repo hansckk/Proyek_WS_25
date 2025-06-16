@@ -382,6 +382,59 @@ router.get("/profile", authenticateToken, async (req, res) => {
   }
 });
 
+
+router.post("/topup", authenticateToken, async (req, res) => {
+  try {
+    const topupSchema = Joi.object({
+      jumlah_topup: Joi.number().integer().min(1000).required().messages({
+        "number.base": "Jumlah top-up harus berupa angka.",
+        "number.integer": "Jumlah top-up harus berupa bilangan bulat.",
+        "number.min": "Minimal top-up adalah 1000.",
+        "any.required": "Jumlah top-up wajib diisi.",
+      }),
+    });
+
+    const { error, value } = topupSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user || user.deletedAt) {
+      return res.status(404).json({ error: "User tidak ditemukan atau telah dihapus." });
+    }
+
+    const pokeDollarBefore = user.pokeDollar;
+    const amountToTopUp = value.jumlah_topup;
+
+    const pokeDollarsToAdd = Math.floor(amountToTopUp / 1000) * 100;
+
+    if (pokeDollarsToAdd <= 0) {
+        return res.status(400).json({ error: "Jumlah top-up tidak menghasilkan PokeDollar." });
+    }
+
+    user.pokeDollar += pokeDollarsToAdd;
+    user.updatedAt = new Date();
+    await user.save();
+
+    return res.status(200).json({
+      message: "Top-up PokeDollar berhasil!",
+      data: {
+        name: user.name,     
+        pokeDollarBefore: pokeDollarBefore,
+        pokeDollarAdded: pokeDollarsToAdd, 
+        pokeDollarAfter: user.pokeDollar,
+      },
+    });
+  } catch (error) {
+    console.error("Error during top-up:", error);
+    return res.status(500).json({ error: "Terjadi kesalahan pada server saat melakukan top-up." });
+  }
+});
+
+
 const tradeSchema = Joi.object({
   user_id: Joi.string().required(),
   pokemon_id: Joi.string().required(),
