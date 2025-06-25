@@ -82,13 +82,12 @@ router.post("/register", async (req, res) => {
         username: createUser.username,
         email: createUser.email,
         role: createUser.role,
-      }
+      },
     });
   } catch (error) {
     return res.status(500).json(error.message);
   }
 });
-
 
 router.post("/register/admin", async (req, res) => {
   try {
@@ -123,9 +122,9 @@ router.post("/register/admin", async (req, res) => {
     newAdmin.createdAt = new Date();
     newAdmin.updatedAt = new Date();
     newAdmin.deletedAt = null;
-    newAdmin.pokemon_storage = 999999999; 
-    newAdmin.pokeDollar = 99999999999999999;      
-    newAdmin.role = "Admin";      
+    newAdmin.pokemon_storage = 999999999;
+    newAdmin.pokeDollar = 99999999999999999;
+    newAdmin.role = "Admin";
 
     const createAdmin = await User.create(newAdmin);
 
@@ -136,14 +135,16 @@ router.post("/register/admin", async (req, res) => {
         username: createAdmin.username,
         email: createAdmin.email,
         role: createAdmin.role,
-      }
+      },
     });
   } catch (error) {
     console.error("Admin registration error:", error);
-    return res.status(500).json({ error: error.message || "Internal server error during admin registration." });
+    return res.status(500).json({
+      error:
+        error.message || "Internal server error during admin registration.",
+    });
   }
 });
-
 
 router.post("/login", async (req, res) => {
   try {
@@ -186,23 +187,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 router.put("/changeUser", authenticateToken, async (req, res) => {
   try {
     const updateUserSchema = Joi.object({
       name: Joi.string().optional(),
       username: Joi.string().min(5).optional(),
-      password: Joi.string().min(6).optional(), 
+      password: Joi.string().min(6).optional(),
       email: Joi.string().email().optional(),
       age: Joi.number().integer().min(6).optional(),
     })
-      .min(1) 
+      .min(1)
       .messages({
         "object.min":
           "Setidaknya satu field (name, username, password, email, age) harus diisi untuk update.",
       });
 
-    const { error, value } = updateUserSchema.validate(req.body); 
+    const { error, value } = updateUserSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
@@ -263,7 +263,7 @@ router.put("/changeUser", authenticateToken, async (req, res) => {
           username: userToUpdate.username,
           email: userToUpdate.email,
           age: userToUpdate.age,
-          role: userToUpdate.role, 
+          role: userToUpdate.role,
         },
       });
     } else {
@@ -276,7 +276,7 @@ router.put("/changeUser", authenticateToken, async (req, res) => {
           email: userToUpdate.email,
           age: userToUpdate.age,
           role: userToUpdate.role,
-        }
+        },
       });
     }
   } catch (error) {
@@ -285,9 +285,7 @@ router.put("/changeUser", authenticateToken, async (req, res) => {
   }
 });
 
-
 //
-
 
 router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   try {
@@ -310,7 +308,7 @@ router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   }
 });
 
-router.put("/forgetPassword", async (req, res) => {
+router.put("/forget-password", async (req, res) => {
   try {
     const passwordSchema = Joi.object({
       username: Joi.string().required(),
@@ -382,7 +380,6 @@ router.get("/profile", authenticateToken, async (req, res) => {
   }
 });
 
-
 router.post("/topup", authenticateToken, async (req, res) => {
   try {
     const topupSchema = Joi.object({
@@ -403,7 +400,9 @@ router.post("/topup", authenticateToken, async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user || user.deletedAt) {
-      return res.status(404).json({ error: "User tidak ditemukan atau telah dihapus." });
+      return res
+        .status(404)
+        .json({ error: "User tidak ditemukan atau telah dihapus." });
     }
 
     const pokeDollarBefore = user.pokeDollar;
@@ -412,7 +411,9 @@ router.post("/topup", authenticateToken, async (req, res) => {
     const pokeDollarsToAdd = Math.floor(amountToTopUp / 1000) * 100;
 
     if (pokeDollarsToAdd <= 0) {
-        return res.status(400).json({ error: "Jumlah top-up tidak menghasilkan PokeDollar." });
+      return res
+        .status(400)
+        .json({ error: "Jumlah top-up tidak menghasilkan PokeDollar." });
     }
 
     user.pokeDollar += pokeDollarsToAdd;
@@ -422,18 +423,19 @@ router.post("/topup", authenticateToken, async (req, res) => {
     return res.status(200).json({
       message: "Top-up PokeDollar berhasil!",
       data: {
-        name: user.name,     
+        name: user.name,
         pokeDollarBefore: pokeDollarBefore,
-        pokeDollarAdded: pokeDollarsToAdd, 
+        pokeDollarAdded: pokeDollarsToAdd,
         pokeDollarAfter: user.pokeDollar,
       },
     });
   } catch (error) {
     console.error("Error during top-up:", error);
-    return res.status(500).json({ error: "Terjadi kesalahan pada server saat melakukan top-up." });
+    return res
+      .status(500)
+      .json({ error: "Terjadi kesalahan pada server saat melakukan top-up." });
   }
 });
-
 
 const tradeSchema = Joi.object({
   user_id: Joi.string().required(),
