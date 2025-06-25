@@ -110,24 +110,23 @@ router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id;
     const { pokedex_entries } = req.body;
-
+    
     if (userId !== req.user.id && userId !== req.user._id.toString()) {
       return res.status(403).json({ message: "You're not allowed to update someone else's buddy." });
     }
 
     const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // old buddy = null if exists
     if (user.buddy_pokemon) {
       await Pokemons.findByIdAndUpdate(user.buddy_pokemon, {
         $unset: { assigned_buddy: "" },
       });
     }
 
-    // Find new buddy owned by user
     const newBuddy = await Pokemons.findOne({
       pokedex_entries: pokedex_entries,
       pokemon_owner: userId,
@@ -137,7 +136,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: `No owned Pokemon with Pokedex entry ${pokedex_entries}.` });
     }
 
-    // Assign new buddy
     user.buddy_pokemon = newBuddy._id;
     newBuddy.assigned_buddy = user._id;
 
@@ -156,6 +154,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
       },
     });
   } catch (error) {
+    if (error.name === 'CastError' && error.path === '_id') {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
     console.error("Update Error:", error);
     res.status(500).json({ message: 'Internal server error.' });
   }
