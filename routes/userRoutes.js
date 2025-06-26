@@ -187,7 +187,7 @@ router.post("/login", async (req, res) => {
 });
 
 
-router.put("/changeUser", authenticateToken, async (req, res) => {
+router.put("/change-user", authenticateToken, async (req, res) => {
   try {
     const updateUserSchema = Joi.object({
       name: Joi.string().optional(),
@@ -310,7 +310,7 @@ router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   }
 });
 
-router.put("/forgetPassword", async (req, res) => {
+router.put("/forget-password", async (req, res) => {
   try {
     const passwordSchema = Joi.object({
       username: Joi.string().required(),

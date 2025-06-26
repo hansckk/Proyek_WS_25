@@ -163,8 +163,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-
-
 router.delete('/remove/:pokedex_entries', async (req, res) => {
   try {
     const { pokedex_entries } = req.params;

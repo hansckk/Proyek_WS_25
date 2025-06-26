@@ -299,7 +299,7 @@ router.get(
  *       500:
  *         description: Internal server error
  */
-router.get("/buddyUser", authenticateToken, async (req, res) => {
+router.get("/buddy-user", authenticateToken, async (req, res) => {
   try {
     const usersWithBuddies = await User.find({
       buddy_pokemon: { $exists: true, $ne: null },
@@ -395,7 +395,7 @@ router.get("/buddyUser", authenticateToken, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/buddyUser/:userId", authenticateToken, async (req, res) => {
+router.get("/buddy-user/:userId", authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -735,7 +735,7 @@ router.delete("/user/:userId", authenticateToken, isAdmin, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/softDeleted", authenticateToken, isAdmin, async (req, res) => {
+router.get("/soft-deleted", authenticateToken, isAdmin, async (req, res) => {
   try {
     const softDeletedUsers = await User.find({ deletedAt: { $ne: null } })
       .select("+password") // Include password for admin view
@@ -866,7 +866,7 @@ router.post(
  *         description: Internal server error
  */
 router.delete(
-  "/deletePermanent/:userId",
+  "/delete-permanent/:userId",
   authenticateToken,
   isAdmin,
   async (req, res) => {
